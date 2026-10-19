@@ -38,24 +38,35 @@ function formatDiffOutput(diff) {
   return files
     .map((file) => {
       const lines = file.split(/\r?\n/);
-      const header = lines[0];
-      const coloredHeader = header.replace(
-        /^diff --git /,
-        `${colors.blue}diff --git ${colors.reset}`,
-      );
-      const coloredBody = lines
+      const diffHeader = lines[0].replace(/^diff --git /, "");
+      const additions = lines.filter(
+        (line) => line.startsWith("+") && !line.startsWith("+++"),
+      ).length;
+      const deletions = lines.filter(
+        (line) => line.startsWith("-") && !line.startsWith("---"),
+      ).length;
+      const title = ` ${diffHeader} (+${additions} -${deletions}) `;
+      const width = Math.max(title.length, 32);
+      const body = lines
         .slice(1)
         .map((line) => {
           if (line.startsWith("+") && !line.startsWith("+++")) {
-            return `${colors.green}${line}${colors.reset}`;
+            return ` | ${colors.green}${line}${colors.reset}`;
           }
           if (line.startsWith("-") && !line.startsWith("---")) {
-            return `${colors.red}${line}${colors.reset}`;
+            return ` | ${colors.red}${line}${colors.reset}`;
           }
-          return line;
+          return ` | ${line}`;
         });
 
-      return [coloredHeader, ...coloredBody].join("\n");
+      return [
+        `${colors.blue}┌─${"─".repeat(width - 2)}─┐${colors.reset}`,
+        `│${" ".repeat(width)}│`,
+        `│${title}${" ".repeat(width - title.length)}│`,
+        `│${" ".repeat(width)}│`,
+        `${colors.blue}└─${"─".repeat(width - 2)}─┘${colors.reset}`,
+        ...body,
+      ].join("\n");
     })
     .join("\n\n") + (files.length ? "\n" : "");
 }

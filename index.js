@@ -2,11 +2,52 @@
 import { execFile } from "node:child_process";
 import { resolve } from "node:path";
 
-const repo = resolve(process.argv[2] ?? ".");
+const colors = {
+  reset: "\x1b[0m",
+  blue: "\x1b[34m",
+  green: "\x1b[32m",
+  red: "\x1b[31m",
+};
+
+const watchedPath = resolve(process.cwd(), process.argv[2] ?? ".");
+
+function formatDiffOutput(diff) {
+  if (!diff) {
+    return diff;
+  }
+
+  const files = diff
+    .split(/^diff --git /m)
+    .slice(1)
+    .map((file) => file.replace(/^\r?\n/, "").replace(/\r?\n+$/, ""));
+  return files
+    .map((file) => {
+      const lines = file.split(/\r?\n/);
+      const header = lines[0];
+      const coloredHeader = header.replace(
+        /^diff --git /,
+        `${colors.blue}diff --git ${colors.reset}`,
+      );
+      const coloredBody = lines
+        .slice(1)
+        .map((line) => {
+          if (line.startsWith("+") && !line.startsWith("+++")) {
+            return `${colors.green}${line}${colors.reset}`;
+          }
+          if (line.startsWith("-") && !line.startsWith("---")) {
+            return `${colors.red}${line}${colors.reset}`;
+          }
+          return line;
+        });
+
+      return [coloredHeader, ...coloredBody].join("\n");
+    })
+    .join("\n\n") + (files.length ? "\n" : "");
+}
 
 function runGit(args) {
   return new Promise((resolve, reject) => {
-    execFile("git", args, { cwd: repo }, (err, stdout, stderr) => {
+    execFile("git", args, { cwd: process.cwd() }, (err, stdout, stderr) => {
       if (err) {
         reject(new Error(stderr.trim()));
       } else {
@@ -24,13 +65,12 @@ async function main() {
       "--no-color",
       "HEAD",
       "--",
-      ".",
+      watchedPath,
     ]);
-    process.stdout.write(diff);
+    process.stdout.write(formatDiffOutput(diff));
   } catch (err) {
     process.stderr.write(err.message + "\n");
   }
 }
 
 main();
-// new content

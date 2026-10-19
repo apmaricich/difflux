@@ -26,10 +26,11 @@ async function main() {
       "--",
       ".",
     ]);
-    console.log(diff);
+    process.stdout.write(diff);
   } catch (err) {
-    console.error(err.message);
+    process.stderr.write(err.message + "\n");
   }
 }
 
 main();
+// new content

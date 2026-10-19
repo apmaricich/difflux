@@ -10,7 +10,8 @@ const colors = {
 };
 
 const currentDir = process.cwd();
-const targetArg = process.argv[2];
+const command = process.argv[2];
+const targetArg = command === "ls" ? process.argv[3] : process.argv[2];
 const targetPath = targetArg
   ? resolve(currentDir, targetArg)
   : currentDir;
@@ -77,8 +78,86 @@ function runGit(args) {
   });
 }
 
+function parseNumstatOutput(output) {
+  return output
+    .split("\0")
+    .filter(Boolean)
+    .map((record) => {
+      const [additions, deletions, ...pathParts] = record.split("\t");
+      return {
+        additions: Number.parseInt(additions, 10),
+        deletions: Number.parseInt(deletions, 10),
+        path: pathParts.join("\t"),
+      };
+    });
+}
+
+function formatLineCount(count) {
+  return count === 0 ? "0" : `-${count}`;
+}
+
+function formatTreeOutput(changedFiles) {
+  if (!changedFiles.length) {
+    return ".";
+  }
+
+  const root = new Map();
+  for (const file of changedFiles) {
+    const segments = file.path.split("/");
+    const name = segments.pop();
+    let directory = root;
+
+    for (const segment of segments) {
+      if (!directory.has(segment)) {
+        directory.set(segment, new Map());
+      }
+      directory = directory.get(segment);
+    }
+
+    directory.set(name, file);
+  }
+
+  function renderDirectory(directory, prefix) {
+    return [...directory.entries()]
+      .sort(([left], [right]) => left.localeCompare(right))
+      .map(([name, children], index, entries) => {
+        const last = index === entries.length - 1;
+        const connector = last ? "└── " : "├── ";
+        const childPrefix = prefix + (last ? "    " : "│   ");
+
+        if (!(children instanceof Map)) {
+          return `${prefix}${connector}${name} (+${children.additions}, ${formatLineCount(children.deletions)})`;
+        }
+
+        return [
+          `${prefix}${connector}${name}/`,
+          ...renderDirectory(children, childPrefix),
+        ];
+      })
+      .flat();
+  }
+
+  return [".", ...renderDirectory(root, "")].join("\n");
+}
+
 async function main() {
   try {
+    if (command === "ls") {
+      const output = await runGit([
+        "diff",
+        "--numstat",
+        "--no-color",
+        "--no-renames",
+        "-z",
+        "HEAD",
+        "--",
+        relativeTarget || ".",
+      ]);
+      const changedFiles = parseNumstatOutput(output);
+      process.stdout.write(formatTreeOutput(changedFiles) + "\n");
+      return;
+    }
+
     const diff = await runGit([
       "diff",
       "--unified=0",

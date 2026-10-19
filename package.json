@@ -1,0 +1,14 @@
+{
+  "name": "difflux",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "difflux": "./index.js"
+  },
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "chokidar": "^5.0.0"
+  }
+}

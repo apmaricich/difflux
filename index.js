@@ -1,6 +1,12 @@
 #!/usr/bin/env node
 import { execFile } from "node:child_process";
-import { resolve } from "node:path";
+import {
+  dirname,
+  isAbsolute,
+  relative,
+  resolve,
+} from "node:path";
+import { fileURLToPath } from "node:url";
 
 const colors = {
   reset: "\x1b[0m",
@@ -9,7 +15,16 @@ const colors = {
   red: "\x1b[31m",
 };
 
-const watchedPath = resolve(process.cwd(), process.argv[2] ?? ".");
+const repoRoot = dirname(fileURLToPath(import.meta.url));
+const targetArg = process.argv[2];
+const targetPath = targetArg
+  ? resolve(process.cwd(), targetArg)
+  : repoRoot;
+const relativeTarget = relative(repoRoot, targetPath);
+
+if (relativeTarget.startsWith("..") || isAbsolute(relativeTarget)) {
+  throw new Error(`Target must be inside the repository: ${targetPath}`);
+}
 
 function formatDiffOutput(diff) {
   if (!diff) {
@@ -47,7 +62,7 @@ function formatDiffOutput(diff) {
 
 function runGit(args) {
   return new Promise((resolve, reject) => {
-    execFile("git", args, { cwd: process.cwd() }, (err, stdout, stderr) => {
+    execFile("git", args, { cwd: repoRoot }, (err, stdout, stderr) => {
       if (err) {
         reject(new Error(stderr.trim()));
       } else {
@@ -65,7 +80,7 @@ async function main() {
       "--no-color",
       "HEAD",
       "--",
-      watchedPath,
+      relativeTarget || ".",
     ]);
     process.stdout.write(formatDiffOutput(diff));
   } catch (err) {

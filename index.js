@@ -60,6 +60,13 @@ function sanitizeForTerminal(text) {
     .replace(/[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]/g, "");
 }
 
+function formatHeaderTitle(rawHeader, additions, deletions) {
+  // Extract single path from a/b pair (use b/ path for renames)
+  const headerMatch = rawHeader.match(/^a\/([^ ]+) b\/([^ ]+)/);
+  const displayPath = headerMatch ? "./" + headerMatch[2] : "./" + rawHeader;
+  return ` ${displayPath} ${formatLineCounts(additions, deletions)} `;
+}
+
 function formatDiffOutput(diff) {
   if (!diff) {
     return diff;
@@ -72,14 +79,14 @@ function formatDiffOutput(diff) {
   return files
     .map((file) => {
       const lines = file.split(/\r?\n/);
-      const diffHeader = lines[0].replace(/^diff --git /, "");
+      const rawHeader = lines[0].replace(/^diff --git /, "");
       const additions = lines.filter(
         (line) => line.startsWith("+") && !line.startsWith("+++"),
       ).length;
       const deletions = lines.filter(
         (line) => line.startsWith("-") && !line.startsWith("---"),
       ).length;
-      const title = ` ${diffHeader} ${formatLineCounts(additions, deletions)} `;
+      const title = formatHeaderTitle(rawHeader, additions, deletions);
       const width = Math.max(getVisibleLength(title), 32);
       const body = lines
         .slice(1)

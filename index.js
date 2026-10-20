@@ -12,6 +12,7 @@ const colors = {
 const currentDir = process.cwd();
 const command = process.argv[2];
 const targetArg = command === "ls" ? process.argv[3] : process.argv[2];
+const isHelpRequested = process.argv.includes("--help");
 const targetPath = targetArg
   ? resolve(currentDir, targetArg)
   : currentDir;
@@ -40,8 +41,8 @@ function formatDiffOutput(diff) {
       const deletions = lines.filter(
         (line) => line.startsWith("-") && !line.startsWith("---"),
       ).length;
-      const title = ` ${diffHeader} (+${additions} -${deletions}) `;
-      const width = Math.max(title.length, 32);
+      const title = ` ${diffHeader} ${formatLineCounts(additions, deletions)} `;
+      const width = Math.max(getVisibleLength(title), 32);
       const body = lines
         .slice(1)
         .map((line) => {
@@ -57,7 +58,7 @@ function formatDiffOutput(diff) {
       return [
         `${colors.blue}┌─${"─".repeat(width - 2)}─┐${colors.reset}`,
         `│${" ".repeat(width)}│`,
-        `│${title}${" ".repeat(width - title.length)}│`,
+        `│${title}${" ".repeat(width - getVisibleLength(title))}│`,
         `│${" ".repeat(width)}│`,
         `${colors.blue}└─${"─".repeat(width - 2)}─┘${colors.reset}`,
         ...body,
@@ -92,8 +93,12 @@ function parseNumstatOutput(output) {
     });
 }
 
-function formatLineCount(count) {
-  return count === 0 ? "0" : `-${count}`;
+function formatLineCounts(additions, deletions) {
+  return `(${colors.green}+${additions}${colors.reset}, ${colors.red}-${deletions}${colors.reset})`;
+}
+
+function getVisibleLength(value) {
+  return value.replace(/\x1b\[[0-9;]*m/g, "").length;
 }
 
 function formatTreeOutput(changedFiles) {
@@ -126,7 +131,7 @@ function formatTreeOutput(changedFiles) {
         const childPrefix = prefix + (last ? "    " : "│   ");
 
         if (!(children instanceof Map)) {
-          return `${prefix}${connector}${name} (+${children.additions}, ${formatLineCount(children.deletions)})`;
+          return `${prefix}${connector}${name} ${formatLineCounts(children.additions, children.deletions)}`;
         }
 
         return [
@@ -140,8 +145,33 @@ function formatTreeOutput(changedFiles) {
   return [".", ...renderDirectory(root, "")].join("\n");
 }
 
+function formatHelp() {
+  return [
+    "Usage:",
+    "  difflux [path]",
+    "  difflux ls [path]",
+    "  difflux --help",
+    "",
+    "Commands:",
+    "  ls  Show changed files in a tree with additions and deletions",
+    "",
+    "Arguments:",
+    "  path  Optional path within the current directory to inspect",
+    "",
+    "Examples:",
+    "  difflux",
+    "  difflux src",
+    "  difflux ls",
+    "  difflux ls src",
+  ].join("\n") + "\n";
+}
+
 async function main() {
   try {
+    if (isHelpRequested) {
+      process.stdout.write(formatHelp());
+      return;
+    }
     if (command === "ls") {
       const output = await runGit([
         "diff",

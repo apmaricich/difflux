@@ -86,34 +86,101 @@ function formatDiffOutput(diff) {
       const deletions = lines.filter(
         (line) => line.startsWith("-") && !line.startsWith("---"),
       ).length;
-      const title = formatHeaderTitle(rawHeader, additions, deletions);
-      const width = Math.max(getVisibleLength(title), 32);
-      const body = lines
+
+      // Extract display path (use b/ path for renames)
+      const headerMatch = rawHeader.match(/^a\/([^ ]+) b\/([^ ]+)/);
+      const displayPath = headerMatch ? "./" + headerMatch[2] : "./" + rawHeader;
+
+      // Filter to just hunk lines (remove git metadata)
+      const hunkLines = lines
         .slice(1)
         .filter(
           (line) =>
             !line.startsWith("index ") &&
             !line.startsWith("--- ") &&
             !line.startsWith("+++ "),
-        )
-        .map((line) => {
+        );
+
+      // Parse hunks: split on @@ headers
+      const hunks = parseHunks(hunkLines);
+
+      // Format header: ● path +stats
+      const header = `${colors.bold}● ${displayPath}${colors.reset} ${formatLineCounts(additions, deletions)}`;
+
+      // Format each hunk with line numbers and elision
+      const formattedHunks = hunks.map((hunk, hunkIndex) => {
+        // Determine max line number for padding
+        const maxLine = Math.max(
+          hunk.oldStart + hunk.oldCount,
+          hunk.newStart + hunk.newCount,
+        );
+        const padWidth = String(maxLine).length;
+
+        let oldLine = hunk.oldStart;
+        let newLine = hunk.newStart;
+        const formattedLines = hunk.lines.map((line) => {
           if (line.startsWith("+")) {
-            return ` | ${colors.green}${line}${colors.reset}`;
+            const lineNum = String(newLine).padStart(padWidth);
+            newLine++;
+            return `${lineNum}  ${colors.green}+${line.slice(1)}${colors.reset}`;
           }
           if (line.startsWith("-")) {
-            return ` | ${colors.red}${line}${colors.reset}`;
+            const lineNum = String(oldLine).padStart(padWidth);
+            oldLine++;
+            return `${lineNum}  ${colors.red}-${line.slice(1)}${colors.reset}`;
           }
-          return ` | ${line}`;
+          // Context line: show new line number
+          const lineNum = String(newLine).padStart(padWidth);
+          oldLine++;
+          newLine++;
+          return `${lineNum}  ${line}`;
         });
 
-      return [
-        `${colors.blue}┌─${"─".repeat(width - 2)}─┐${colors.reset}`,
-        `│${title}${" ".repeat(width - getVisibleLength(title))}│`,
-        `${colors.blue}└─${"─".repeat(width - 2)}─┘${colors.reset}`,
-        ...body,
-      ].join("\n");
+        // Add elision between distant hunks
+        if (hunkIndex > 0) {
+          const prevHunk = hunks[hunkIndex - 1];
+          const gap = hunk.oldStart - (prevHunk.oldStart + prevHunk.oldCount);
+          if (gap > 2) {
+            return [...formattedLines, `...`].join("\n");
+          }
+        }
+
+        return formattedLines.join("\n");
+      });
+
+      return [header, ...formattedHunks].join("\n\n");
     })
-    .join("\n\n") + (files.length ? "\n" : "");
+    .join("\n\n\n") + (files.length ? "\n" : "");
+}
+
+function parseHunks(lines) {
+  const hunks = [];
+  let currentHunk = null;
+
+  for (const line of lines) {
+    // Detect hunk header: @@ -old_start,old_count +new_start,new_count @@
+    const hunkMatch = line.match(/^@@ -(\d+)(?:,(\d+))? \+(\d+)(?:,(\d+))? @@/);
+    if (hunkMatch) {
+      if (currentHunk) {
+        hunks.push(currentHunk);
+      }
+      currentHunk = {
+        oldStart: Number.parseInt(hunkMatch[1], 10),
+        oldCount: hunkMatch[2] ? Number.parseInt(hunkMatch[2], 10) : 1,
+        newStart: Number.parseInt(hunkMatch[3], 10),
+        newCount: hunkMatch[4] ? Number.parseInt(hunkMatch[4], 10) : 1,
+        lines: [],
+      };
+    } else if (currentHunk) {
+      currentHunk.lines.push(line);
+    }
+  }
+
+  if (currentHunk) {
+    hunks.push(currentHunk);
+  }
+
+  return hunks;
 }
 
 function runGit(args) {

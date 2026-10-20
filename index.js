@@ -90,11 +90,17 @@ function formatDiffOutput(diff) {
       const width = Math.max(getVisibleLength(title), 32);
       const body = lines
         .slice(1)
+        .filter(
+          (line) =>
+            !line.startsWith("index ") &&
+            !line.startsWith("--- ") &&
+            !line.startsWith("+++ "),
+        )
         .map((line) => {
-          if (line.startsWith("+") && !line.startsWith("+++")) {
+          if (line.startsWith("+")) {
             return ` | ${colors.green}${line}${colors.reset}`;
           }
-          if (line.startsWith("-") && !line.startsWith("---")) {
+          if (line.startsWith("-")) {
             return ` | ${colors.red}${line}${colors.reset}`;
           }
           return ` | ${line}`;
@@ -102,9 +108,7 @@ function formatDiffOutput(diff) {
 
       return [
         `${colors.blue}┌─${"─".repeat(width - 2)}─┐${colors.reset}`,
-        `│${" ".repeat(width)}│`,
         `│${title}${" ".repeat(width - getVisibleLength(title))}│`,
-        `│${" ".repeat(width)}│`,
         `${colors.blue}└─${"─".repeat(width - 2)}─┘${colors.reset}`,
         ...body,
       ].join("\n");

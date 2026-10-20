@@ -1,6 +1,8 @@
 #!/usr/bin/env node
-import { execFile } from "node:child_process";
+import { execFile, execSync } from "node:child_process";
 import { isAbsolute, relative, resolve } from "node:path";
+import { openSync } from "node:fs";
+import tty from "node:tty";
 
 import chokidar from "chokidar";
 
@@ -302,7 +304,6 @@ let watchState = {
 
 function getTerminalDimensions() {
   try {
-    const tty = require("node:tty");
     return {
       rows: tty.getWindowSize()[1] || 24,
       cols: tty.getWindowSize()[0] || 80,
@@ -333,10 +334,10 @@ function renderWatchFrame(content, state) {
 
   // Clear screen and render
   process.stdout.write("\x1b[H\x1b[2J");
-  process.stdout.write(visibleLines.join("\n"));
+  process.stdout.write(visibleLines.join("\n") + "\n");
 
-  // Position cursor at status bar
-  process.stdout.write(`\x1b[${dims.rows - 1};1H`);
+  // Position cursor at status bar (last line)
+  process.stdout.write(`\x1b[${dims.rows};1H`);
   process.stdout.write(statusBar);
 }
 
@@ -422,39 +423,78 @@ async function runWatch() {
   // Polling loop for index-only changes
   const pollTimer = setInterval(scheduleRefresh, intervalMs);
 
-  // Keyboard handling
-  const fd = openSync("/dev/tty", "r");
-  const term = require("node:readline");
-  const rl = term.Interface({
-    input: process.stdin,
-    output: process.stdout,
-    terminal: true,
-  });
+  // Keyboard handling: raw mode with echo disabled
+  // Save terminal settings and disable echo
+  let originalSettings = null;
+  let usingStty = false;
 
-  rl.on("line", (line) => {
-    if (line.toLowerCase() === "q") {
-      rl.close();
+  if (process.stdin.isTTY) {
+    try {
+      originalSettings = execSync("stty -g", { encoding: "utf-8" });
+      execSync("stty raw -echo", { encoding: "utf-8" });
+      usingStty = true;
+    } catch {
+      // Fallback to setRawMode if stty fails
+      process.stdin.setRawMode(true);
+    }
+  } else {
+    // Not a TTY, use setRawMode
+    try {
+      process.stdin.setRawMode(true);
+    } catch {
+      // Ignore if setRawMode fails
+    }
+  }
+
+  process.stdin.resume();
+
+  function restoreTerminal() {
+    if (usingStty && originalSettings) {
+      try {
+        execSync(`stty ${originalSettings}`, { encoding: "utf-8" });
+      } catch {
+        // Ignore restore errors
+      }
+    } else {
+      try {
+        process.stdin.setRawMode(false);
+      } catch {
+        // Ignore if setRawMode fails
+      }
+    }
+    process.stdin.pause();
+  }
+
+  process.stdin.on("data", (data) => {
+    const key = data.toString();
+
+    // q to quit
+    if (key === "q" || key === "Q") {
+      restoreTerminal();
+      process.stdin.destroy();
       watcher.close();
       clearInterval(pollTimer);
       clearTimeout(refreshTimer);
       process.exit(0);
     }
-    if (line.toLowerCase() === "r") {
+
+    // r to refresh
+    if (key === "r" || key === "R") {
       watchState.scrolledUp = false;
       watchState.scrollOffset = 0;
       watchState.needsRefresh = false;
       scheduleRefresh();
     }
-  });
 
-  // Handle scroll events (simplified: track via keypress)
-  rl.on("keypress", (str, key) => {
-    if (key && key.name === "up") {
+    // Up arrow: ESC [ A — scroll up (show earlier content)
+    if (key === "\u001b[A") {
       watchState.scrolledUp = true;
-      watchState.scrollOffset = Math.max(0, watchState.scrollOffset - 1);
+      watchState.scrollOffset = watchState.scrollOffset + 1;
       renderWatchFrame(prevContent, watchState);
     }
-    if (key && key.name === "down") {
+
+    // Down arrow: ESC [ B — scroll down (show later content)
+    if (key === "\u001b[B") {
       if (watchState.scrollOffset > 0) {
         watchState.scrollOffset--;
       } else {

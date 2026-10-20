@@ -19,5 +19,3 @@
 - Sanitize terminal control characters from repository content before formatting, and do not log diff contents or credentials.
 - Add Node built-in `node:test` coverage for Git exit status, interval validation, coalesced refreshes, staged/unstaged changes, large-output paging, less fallback, and scroll-position retention.
 - Keep `chokidar@5.0.0` for compatibility with the existing Node.js `>=20.19.0` runtime; do not upgrade to Chokidar v6 without intentionally raising the supported runtime.
-
-edit

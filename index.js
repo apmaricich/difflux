@@ -298,6 +298,7 @@ let watchState = {
   content: null,
   scrolledUp: false,
   scrollOffset: 0,
+  maxScrollOffset: 0,
   needsRefresh: true,
   refreshTriggered: false,
 };
@@ -397,6 +398,9 @@ async function runWatch() {
 
         // Detect changes
         if (content !== prevContent) {
+          const dims = getTerminalDimensions();
+          const lineCount = content.split("\n").length;
+          watchState.maxScrollOffset = Math.max(0, lineCount - dims.rows + 1);
           if (watchState.scrolledUp) {
             watchState.needsRefresh = true;
           } else {
@@ -487,14 +491,18 @@ async function runWatch() {
     }
 
     // Up arrow: ESC [ A — scroll up (show earlier content)
-    if (key === "\u001b[A") {
+    // if (key === "\u001b[A") {
+    if (key === "k") {
+      if (watchState.scrollOffset < watchState.maxScrollOffset) {
+        watchState.scrollOffset++;
+      }
       watchState.scrolledUp = true;
-      watchState.scrollOffset = watchState.scrollOffset + 1;
       renderWatchFrame(prevContent, watchState);
     }
 
     // Down arrow: ESC [ B — scroll down (show later content)
-    if (key === "\u001b[B") {
+    // if (key === "\u001b[B") {
+    if (key === "j") {
       if (watchState.scrollOffset > 0) {
         watchState.scrollOffset--;
       } else {

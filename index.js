@@ -296,7 +296,6 @@ function formatHelp() {
 // Watch mode: terminal renderer with scroll anchoring
 let watchState = {
   content: null,
-  scrolledUp: false,
   scrollOffset: 0,
   maxScrollOffset: 0,
   needsRefresh: true,
@@ -304,38 +303,52 @@ let watchState = {
 };
 
 function getTerminalDimensions() {
-  try {
-    return {
-      rows: tty.getWindowSize()[1] || 24,
-      cols: tty.getWindowSize()[0] || 80,
-    };
-  } catch {
-    return { rows: 24, cols: 80 };
+  // Prefer environment variables (set by shells, tmux, herdr, etc.)
+  // as they reflect the actual terminal size in nested environments
+  if (process.env.LINES && process.env.COLUMNS) {
+    const rows = Number.parseInt(process.env.LINES, 10);
+    const cols = Number.parseInt(process.env.COLUMNS, 10);
+    if (rows > 0 && cols > 0) {
+      return { rows, cols };
+    }
   }
+
+  // Fall back to tty.getWindowSize()
+  try {
+    const size = tty.getWindowSize();
+    if (size && size[0] > 0 && size[1] > 0) {
+      return { rows: size[1], cols: size[0] };
+    }
+  } catch {
+    // tty.getWindowSize() failed
+  }
+
+  // Last resort: defaults
+  return { rows: 24, cols: 80 };
 }
 
 function renderWatchFrame(content, state) {
   const dims = getTerminalDimensions();
   const lines = content.split("\n");
   const totalLines = lines.length;
+  const visibleRows = dims.rows - 1;
 
-  // Calculate scroll position
-  let startLine = 0;
-  if (state.scrolledUp) {
-    startLine = Math.max(0, totalLines - dims.rows + 1 - state.scrollOffset);
-  }
+  // Clamp scroll offset to valid range
+  const maxOffset = Math.max(0, totalLines - visibleRows);
+  const startLine = Math.min(Math.max(0, state.scrollOffset), maxOffset);
 
   // Build visible frame
-  const visibleLines = lines.slice(startLine, startLine + dims.rows - 2);
+  const visibleLines = lines.slice(startLine, startLine + visibleRows);
 
   // Status bar at bottom
-  const statusBar = state.scrolledUp
+  const atBottom = startLine >= maxOffset;
+  const statusBar = !atBottom
     ? `${colors.bold}${colors.underline}New changes available — press r to refresh${colors.reset}`
     : `${colors.dim}Watching... (q to quit)${colors.reset}`;
 
   // Clear screen and render
   process.stdout.write("\x1b[H\x1b[2J");
-  process.stdout.write(visibleLines.join("\n") + "\n");
+  process.stdout.write(visibleLines.join("\n"));
 
   // Position cursor at status bar (last line)
   process.stdout.write(`\x1b[${dims.rows};1H`);
@@ -400,13 +413,16 @@ async function runWatch() {
         if (content !== prevContent) {
           const dims = getTerminalDimensions();
           const lineCount = content.split("\n").length;
-          watchState.maxScrollOffset = Math.max(0, lineCount - dims.rows + 1);
-          if (watchState.scrolledUp) {
-            watchState.needsRefresh = true;
-          } else {
-            watchState.content = content;
-            renderWatchFrame(content, watchState);
+          const visibleRows = dims.rows - 1;
+          const newMaxOffset = Math.max(0, lineCount - visibleRows);
+
+          // If user was at bottom, scroll to new bottom; otherwise keep position
+          if (watchState.scrollOffset >= watchState.maxScrollOffset) {
+            watchState.scrollOffset = newMaxOffset;
           }
+          watchState.maxScrollOffset = newMaxOffset;
+          watchState.content = content;
+          renderWatchFrame(content, watchState);
           prevContent = content;
         }
       } catch (err) {
@@ -434,12 +450,17 @@ async function runWatch() {
 
   if (process.stdin.isTTY) {
     try {
-      originalSettings = execSync("stty -g", { encoding: "utf-8" });
-      execSync("stty raw -echo", { encoding: "utf-8" });
+      // Try stty first; if it fails, fall back to setRawMode
+      originalSettings = execSync("stty -g 2>/dev/null", { encoding: "utf-8" });
+      execSync("stty raw -echo 2>/dev/null", { encoding: "utf-8" });
       usingStty = true;
     } catch {
       // Fallback to setRawMode if stty fails
-      process.stdin.setRawMode(true);
+      try {
+        process.stdin.setRawMode(true);
+      } catch {
+        // Ignore if setRawMode also fails
+      }
     }
   } else {
     // Not a TTY, use setRawMode
@@ -484,29 +505,23 @@ async function runWatch() {
 
     // r to refresh
     if (key === "r" || key === "R") {
-      watchState.scrolledUp = false;
-      watchState.scrollOffset = 0;
+      watchState.scrollOffset = watchState.maxScrollOffset;
       watchState.needsRefresh = false;
       scheduleRefresh();
     }
 
-    // Up arrow: ESC [ A — scroll up (show earlier content)
-    // if (key === "\u001b[A") {
+    // Up arrow: scroll up (show earlier content)
     if (key === "k") {
-      if (watchState.scrollOffset < watchState.maxScrollOffset) {
-        watchState.scrollOffset++;
+      if (watchState.scrollOffset > 0) {
+        watchState.scrollOffset--;
       }
-      watchState.scrolledUp = true;
       renderWatchFrame(prevContent, watchState);
     }
 
-    // Down arrow: ESC [ B — scroll down (show later content)
-    // if (key === "\u001b[B") {
+    // Down arrow: scroll down (show later content)
     if (key === "j") {
-      if (watchState.scrollOffset > 0) {
-        watchState.scrollOffset--;
-      } else {
-        watchState.scrolledUp = false;
+      if (watchState.scrollOffset < watchState.maxScrollOffset) {
+        watchState.scrollOffset++;
       }
       renderWatchFrame(prevContent, watchState);
     }

@@ -14,8 +14,6 @@ The tool was built to make it easier to review what an AI agent is changing in a
 
 ![Example diff output](./docs/screenshots/diff-output.png)
 
-> Add a captured screenshot to `docs/screenshots/diff-output.png` when one is available.
-
 ## Features
 
 - Display a complete diff between `HEAD` and the current working tree.
@@ -28,9 +26,7 @@ The tool was built to make it easier to review what an AI agent is changing in a
 - Sanitize terminal control characters from repository content before displaying it.
 - Persistent top status bar showing the most recent commit message in watch mode.
 
-![Live watch mode](./docs/screenshots/live-watch.gif)
-
-> Add a short GIF to `docs/screenshots/live-watch.gif` showing watch mode, scrolling, and the refresh prompt.
+![Live watch mode](./docs/screenshots/live-watch.png)
 
 ## Built With
 

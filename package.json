@@ -7,7 +7,7 @@
   },
   "scripts": {
     "start": "node index.js",
-    "test": "node --test test/difflux.test.js"
+    "test": "node --test test/difflux.test.js test/terminal.test.js"
   },
   "dependencies": {
     "chokidar": "^5.0.0"

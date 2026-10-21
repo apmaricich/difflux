@@ -24,3 +24,4 @@
 - One-shot output larger than the terminal should use `less` with `-L -R -S -X +F` when stdout is a TTY; currently no pager integration exists.
 - Optional `--pager less` flag for watch mode could be added if needed.
 - Tests for coalesced refreshes, staged/unstaged changes, large-output paging, less fallback, and scroll-position retention are not yet written.
+- Terminal dimensions detection now uses `process.stdout.columns`/`process.stdout.rows` (Node.js 20+ standard) instead of the non-existent `tty.getWindowSize()` method.

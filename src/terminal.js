@@ -4,7 +4,6 @@
  */
 
 import { execSync } from "node:child_process";
-import tty from "node:tty";
 import { ANSI, TERMINAL } from "./constants.js";
 
 /**
@@ -18,19 +17,17 @@ export function getTerminalDimensions() {
     const rows = Number.parseInt(process.env.LINES, 10);
     const cols = Number.parseInt(process.env.COLUMNS, 10);
     if (rows > 0 && cols > 0) {
-      console.log(rows, cols);
       return { rows, cols };
     }
   }
 
-  // Fall back to tty.getWindowSize()
-  try {
-    const size = tty.getWindowSize();
-    if (size && size[0] > 0 && size[1] > 0) {
-      return { rows: size[1], cols: size[0] };
+  // Fall back to process.stdout dimensions (available when stdout is a TTY)
+  if (typeof process.stdout.columns === "number" && typeof process.stdout.rows === "number") {
+    const cols = process.stdout.columns;
+    const rows = process.stdout.rows;
+    if (cols > 0 && rows > 0) {
+      return { rows, cols };
     }
-  } catch {
-    // tty.getWindowSize() failed
   }
 
   // Last resort: defaults

@@ -73,6 +73,9 @@ export function renderWatchFrame(content, state, commitMessage) {
     ? `${ANSI.BOLD}${ANSI.UNDERLINE}New changes available — press r to refresh${ANSI.RESET}`
     : `${ANSI.DIM}Watching... (q to quit)${ANSI.RESET}`;
 
+  // Set scroll region to content area (rows 2 to dims.rows-1)
+  process.stdout.write(`\x1b[2;${dims.rows - 1}r`);
+
   // Clear screen and render top status bar
   process.stdout.write(TERMINAL.CLEAR_SCREEN);
   process.stdout.write(topStatusBar);
@@ -84,6 +87,9 @@ export function renderWatchFrame(content, state, commitMessage) {
   // Position cursor at bottom status bar (last line)
   process.stdout.write(`\x1b[${dims.rows};1H`);
   process.stdout.write(bottomStatusBar);
+
+  // Reset scroll region to full screen
+  process.stdout.write("\x1b[r");
 }
 
 /**

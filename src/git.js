@@ -86,3 +86,17 @@ export function parseNumstatOutput(output) {
       };
     });
 }
+
+/**
+ * Get the most recent commit message.
+ * @param {string} cwd - Working directory.
+ * @returns {Promise<string>} The commit message, or empty string if no commits.
+ */
+export async function getLatestCommitMessage(cwd) {
+  try {
+    const output = await runGit(["log", "-1", "--format=%s"], cwd);
+    return output.trim();
+  } catch {
+    return "";
+  }
+}

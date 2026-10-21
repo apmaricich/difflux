@@ -21,6 +21,8 @@ export const ANSI = {
   BOLD: "\x1b[1m",
   DIM: "\x1b[2m",
   UNDERLINE: "\x1b[4m",
+  BG_LIGHT_GRAY: "\x1b[48;5;250m",
+  FG_BLACK: "\x1b[30m",
 };
 
 export const TERMINAL = {

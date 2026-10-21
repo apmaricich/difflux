@@ -35,15 +35,27 @@ export function getTerminalDimensions() {
 }
 
 /**
- * Render a watch mode frame with scroll anchoring and status bar.
+ * Format the top status bar text.
+ * @param {string} commitMessage - The most recent commit message.
+ * @returns {string} Formatted top status bar.
+ */
+export function formatTopStatusBar(commitMessage) {
+  const message = commitMessage ? commitMessage : "no commits";
+  return `${ANSI.BG_LIGHT_GRAY}${ANSI.FG_BLACK}${ANSI.BOLD} difflux: ${message} ${ANSI.RESET}`;
+}
+
+/**
+ * Render a watch mode frame with scroll anchoring and status bars.
  * @param {string} content - Content to display.
  * @param {{scrollOffset: number}} state - Scroll state.
+ * @param {string} commitMessage - The most recent commit message.
  */
-export function renderWatchFrame(content, state) {
+export function renderWatchFrame(content, state, commitMessage) {
   const dims = getTerminalDimensions();
   const lines = content.split("\n");
   const totalLines = lines.length;
-  const visibleRows = dims.rows - 1;
+  // Reserve 1 row for top status bar, 1 row for bottom status bar
+  const visibleRows = dims.rows - 2;
 
   // Clamp scroll offset to valid range
   const maxOffset = Math.max(0, totalLines - visibleRows);
@@ -52,19 +64,26 @@ export function renderWatchFrame(content, state) {
   // Build visible frame
   const visibleLines = lines.slice(startLine, startLine + visibleRows);
 
-  // Status bar at bottom
+  // Top status bar
+  const topStatusBar = formatTopStatusBar(commitMessage);
+
+  // Bottom status bar
   const atBottom = startLine >= maxOffset;
-  const statusBar = !atBottom
+  const bottomStatusBar = !atBottom
     ? `${ANSI.BOLD}${ANSI.UNDERLINE}New changes available — press r to refresh${ANSI.RESET}`
     : `${ANSI.DIM}Watching... (q to quit)${ANSI.RESET}`;
 
-  // Clear screen and render
+  // Clear screen and render top status bar
   process.stdout.write(TERMINAL.CLEAR_SCREEN);
+  process.stdout.write(topStatusBar);
+
+  // Move cursor to content area (row 2)
+  process.stdout.write("\x1b[2;1H");
   process.stdout.write(visibleLines.join("\n"));
 
-  // Position cursor at status bar (last line)
+  // Position cursor at bottom status bar (last line)
   process.stdout.write(`\x1b[${dims.rows};1H`);
-  process.stdout.write(statusBar);
+  process.stdout.write(bottomStatusBar);
 }
 
 /**

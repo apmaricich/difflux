@@ -4,7 +4,7 @@
  */
 
 import chokidar from "chokidar";
-import { runGit, buildDiffArgs, buildNumstatArgs, parseNumstatOutput } from "./git.js";
+import { runGit, buildDiffArgs, buildNumstatArgs, parseNumstatOutput, getLatestCommitMessage } from "./git.js";
 import { formatDiffOutput, formatTreeOutput } from "./format.js";
 import { renderWatchFrame, setupRawInput, getTerminalDimensions } from "./terminal.js";
 import { DEFAULT_INTERVAL_MS } from "./constants.js";
@@ -27,11 +27,15 @@ export async function runWatch(currentDir, relativeTarget, command, intervalMs) 
   let content = null;
   let prevContent = null;
   let refreshTriggered = false;
+  let commitMessage = "";
 
   const scrollState = {
     scrollOffset: 0,
     maxScrollOffset: 0,
   };
+
+  // Fetch the latest commit message once
+  commitMessage = await getLatestCommitMessage(currentDir);
 
   function scheduleRefresh() {
     if (refreshTriggered) return;
@@ -62,7 +66,7 @@ export async function runWatch(currentDir, relativeTarget, command, intervalMs) 
         if (content !== prevContent) {
           const dims = getTerminalDimensions();
           const lineCount = content.split("\n").length;
-          const visibleRows = dims.rows - 1;
+          const visibleRows = dims.rows - 2;
           const newMaxOffset = Math.max(0, lineCount - visibleRows);
 
           // If user was at bottom, scroll to new bottom; otherwise keep position
@@ -70,7 +74,7 @@ export async function runWatch(currentDir, relativeTarget, command, intervalMs) 
             scrollState.scrollOffset = newMaxOffset;
           }
           scrollState.maxScrollOffset = newMaxOffset;
-          renderWatchFrame(content, scrollState);
+          renderWatchFrame(content, scrollState, commitMessage);
           prevContent = content;
         }
       } catch (err) {
@@ -118,7 +122,7 @@ export async function runWatch(currentDir, relativeTarget, command, intervalMs) 
       if (scrollState.scrollOffset > 0) {
         scrollState.scrollOffset--;
       }
-      renderWatchFrame(prevContent, scrollState);
+      renderWatchFrame(prevContent, scrollState, commitMessage);
     }
 
     // Down arrow: scroll down (show later content)
@@ -126,7 +130,7 @@ export async function runWatch(currentDir, relativeTarget, command, intervalMs) 
       if (scrollState.scrollOffset < scrollState.maxScrollOffset) {
         scrollState.scrollOffset++;
       }
-      renderWatchFrame(prevContent, scrollState);
+      renderWatchFrame(prevContent, scrollState, commitMessage);
     }
   });
 

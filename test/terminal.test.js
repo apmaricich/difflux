@@ -1,6 +1,6 @@
 import { describe, test, beforeEach, afterEach } from "node:test";
 import assert from "node:assert";
-import { getTerminalDimensions } from "../src/terminal.js";
+import { getTerminalDimensions, formatTopStatusBar } from "../src/terminal.js";
 
 describe("getTerminalDimensions", () => {
   let originalLines;
@@ -96,5 +96,25 @@ describe("getTerminalDimensions", () => {
     const dims = getTerminalDimensions();
     assert.strictEqual(dims.rows, 35, "Should ignore negative LINES and use stdout.rows");
     assert.strictEqual(dims.cols, 95, "Should ignore negative COLUMNS and use stdout.columns");
+  });
+});
+
+describe("formatTopStatusBar", () => {
+  test("formats with commit message", () => {
+    const bar = formatTopStatusBar("fix: resolve terminal size bug");
+    assert(bar.includes("difflux: fix: resolve terminal size bug"), "Should include commit message");
+    assert(bar.includes("\x1b[48;5;250m"), "Should have light gray background");
+    assert(bar.includes("\x1b[30m"), "Should have black foreground");
+    assert(bar.includes("\x1b[1m"), "Should be bold");
+  });
+
+  test("formats without commit message", () => {
+    const bar = formatTopStatusBar("");
+    assert(bar.includes("difflux: no commits"), "Should show 'no commits' when empty");
+  });
+
+  test("formats with null commit message", () => {
+    const bar = formatTopStatusBar(null);
+    assert(bar.includes("difflux: no commits"), "Should show 'no commits' when null");
   });
 });

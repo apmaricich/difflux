@@ -26,6 +26,7 @@ The tool was built to make it easier to review what an AI agent is changing in a
 - Preserve relative scroll position while reviewing long outputs.
 - Configure the watch refresh interval from 1 to 60,000 milliseconds.
 - Sanitize terminal control characters from repository content before displaying it.
+- Persistent top status bar showing the most recent commit message in watch mode.
 
 ![Live watch mode](./docs/screenshots/live-watch.gif)
 
@@ -157,9 +158,11 @@ Customize the polling interval:
 difflux ls --watch --interval=250
 ```
 
-Watch mode supports the following terminal controls:
+Watch mode displays a persistent top status bar showing the most recent commit message and a bottom status bar with scroll position and refresh prompts. The top status bar remains visible while scrolling.
 
-- `↑` and `↓` — move through long output
+Terminal controls:
+
+- `j` and `k` — move through long output
 - `r` — refresh while retaining the current relative scroll position
 - `q` — quit the watcher
 - `Ctrl+C` — stop the watcher
@@ -177,11 +180,19 @@ difflux --help
 ```text
 difflux/
 ├── AGENTS.md              # Project and development notes
-├── index.js               # CLI entry point and rendering logic
+├── index.js               # CLI entry point
 ├── package.json           # Package metadata, binary, and scripts
 ├── package-lock.json      # Reproducible dependency versions
+├── src/
+│   ├── cli.js             # CLI argument parsing
+│   ├── constants.js       # ANSI codes and configuration constants
+│   ├── format.js          # Output formatting and sanitization
+│   ├── git.js             # Git command execution and parsing
+│   ├── terminal.js        # Terminal dimensions and rendering
+│   └── watch.js           # Live watch mode with filesystem monitoring
 ├── test/
-│   └── difflux.test.js    # Built-in Node.js CLI tests
+│   ├── difflux.test.js    # CLI integration tests
+│   └── terminal.test.js   # Terminal dimension and status bar tests
 └── README.md              # User documentation
 ```
 

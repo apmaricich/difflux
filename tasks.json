@@ -1,24 +1,36 @@
 {
+  "tasks" : [
+    {
+      "description" : "should pipe to less on default command if the output is larger than the terminal size. ",
+      "title" : "Pipe to less",
+      "completed" : false,
+      "id" : 1,
+      "createdDate" : 1793320866.0637259
+    },
+    {
+      "description" : "files in .gitattributes are showing a diff of NNaN when marked for exclusion in a diff. i want any files excluded from the diff to not be shown in either the difflux or difflux ls commands.",
+      "createdDate" : 1793391159.9760451,
+      "title" : "NaN showing for files excluded from diff",
+      "completed" : true,
+      "updatedDate" : 1793391159.9788229,
+      "completedDate" : 1793393680.342051,
+      "id" : 2,
+      "tags" : [
+        "#bug"
+      ]
+    }
+  ],
   "config" : {
-    "tagDisplayLimit" : 0,
     "command" : [
       "bug",
       "feature"
     ],
+    "sort" : "completed",
     "lists" : [
       "backlogTags",
       "pinTags",
       "command"
     ],
-    "sort" : "completed"
-  },
-  "tasks" : [
-    {
-      "createdDate" : 1793320866.0637259,
-      "title" : "Pipe to less",
-      "id" : 1,
-      "completed" : false,
-      "description" : "should pipe to less on default command if the output is larger than the terminal size. "
-    }
-  ]
+    "tagDisplayLimit" : 0
+  }
 }

@@ -79,12 +79,19 @@ export function parseNumstatOutput(output) {
     .filter(Boolean)
     .map((record) => {
       const [additions, deletions, ...pathParts] = record.split("\t");
+      const addCount = additions === "-" ? 0 : Number.parseInt(additions, 10);
+      const delCount = deletions === "-" ? 0 : Number.parseInt(deletions, 10);
+      // Exclude binary files (which show "-" for additions/deletions) from the output
+      if (additions === "-" || deletions === "-") {
+        return null;
+      }
       return {
-        additions: Number.parseInt(additions, 10),
-        deletions: Number.parseInt(deletions, 10),
+        additions: addCount,
+        deletions: delCount,
         path: pathParts.join("\t"),
       };
-    });
+    })
+    .filter((f) => f !== null);
 }
 
 /**

@@ -43,10 +43,14 @@ function parseHunks(lines) {
       if (currentHunk) {
         hunks.push(currentHunk);
       }
+      // Hunk header: @@ -oldStart,oldCount +newStart,newCount @@
       currentHunk = {
         oldStart: Number.parseInt(hunkMatch[1], 10),
+        // eslint-disable-next-line no-magic-numbers
         oldCount: hunkMatch[2] ? Number.parseInt(hunkMatch[2], 10) : 1,
+        // eslint-disable-next-line no-magic-numbers
         newStart: Number.parseInt(hunkMatch[3], 10),
+        // eslint-disable-next-line no-magic-numbers
         newCount: hunkMatch[4] ? Number.parseInt(hunkMatch[4], 10) : 1,
         lines: [],
       };
@@ -73,7 +77,8 @@ function formatFile(file) {
 
   // Extract display path (use b/ path for renames)
   const headerMatch = rawHeader.match(/^a\/([^ ]+) b\/([^ ]+)/);
-  const displayPath = headerMatch ? "./" + headerMatch[2] : "./" + rawHeader;
+  // eslint-disable-next-line no-magic-numbers
+  const displayPath = headerMatch ? `./${headerMatch[2]}` : `./${rawHeader}`;
 
   // Count additions and deletions
   const additions = lines.filter(
@@ -132,6 +137,8 @@ function formatFile(file) {
     if (hunkIndex > 0) {
       const prevHunk = hunks[hunkIndex - 1];
       const gap = hunk.oldStart - (prevHunk.oldStart + prevHunk.oldCount);
+      // Show elision marker when hunks are 3+ lines apart
+      // eslint-disable-next-line no-magic-numbers
       if (gap > 2) {
         return [...formattedLines, `...`].join("\n");
       }
@@ -234,31 +241,30 @@ export function formatTreeOutput(changedFiles) {
  * @returns {string} Help text.
  */
 export function formatHelp() {
-  return [
-    "Usage:",
-    "  difflux [path]",
-    "  difflux ls [path]",
-    "  difflux --watch [path]",
-    "  difflux ls --watch [path]",
-    "  difflux --help",
-    "",
-    "Commands:",
-    "  ls  Show changed files in a tree with additions and deletions",
-    "",
-    "Options:",
-    "  --watch      Watch for changes and refresh live",
-    "  --interval=N Poll interval in milliseconds (default: 1000, max: 60000)",
-    "",
-    "Arguments:",
-    "  path  Optional path within the current directory to inspect",
-    "",
-    "Examples:",
-    "  difflux",
-    "  difflux src",
-    "  difflux --watch",
-    "  difflux --watch src",
-    "  difflux ls",
-    "  difflux ls --watch",
-    "  difflux ls --watch src",
-  ].join("\n") + "\n";
+  return `Usage:
+  difflux [path]
+  difflux ls [path]
+  difflux --watch [path]
+  difflux ls --watch [path]
+  difflux --help
+
+Commands:
+  ls  Show changed files in a tree with additions and deletions
+
+Options:
+  --watch      Watch for changes and refresh live
+  --interval=N Poll interval in milliseconds (default: 1000, max: 60000)
+
+Arguments:
+  path  Optional path within the current directory to inspect
+
+Examples:
+  difflux
+  difflux src
+  difflux --watch
+  difflux --watch src
+  difflux ls
+  difflux ls --watch
+  difflux ls --watch src
+`;
 }

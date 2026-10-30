@@ -7,7 +7,8 @@ import chokidar from "chokidar";
 import { runGit, buildDiffArgs, buildNumstatArgs, parseNumstatOutput, getLatestCommitMessage } from "./git.js";
 import { formatDiffOutput, formatTreeOutput } from "./format.js";
 import { renderWatchFrame, setupRawInput, getTerminalDimensions } from "./terminal.js";
-import { DEFAULT_INTERVAL_MS } from "./constants.js";
+import { STATUS_BAR_ROWS } from "./constants.js";
+
 
 /**
  * Create and manage a watch mode session.
@@ -34,9 +35,6 @@ export async function runWatch(currentDir, relativeTarget, command, intervalMs) 
     maxScrollOffset: 0,
   };
 
-  // Fetch the latest commit message once
-  commitMessage = await getLatestCommitMessage(currentDir);
-
   function scheduleRefresh() {
     if (refreshTriggered) return;
     refreshTriggered = true;
@@ -45,6 +43,8 @@ export async function runWatch(currentDir, relativeTarget, command, intervalMs) 
     refreshTimer = setTimeout(async () => {
       try {
         const now = Date.now();
+        // Throttle: wait until at least half the interval has elapsed
+        // eslint-disable-next-line no-magic-numbers
         if (now - lastPoll < intervalMs / 2) {
           // Throttle: wait until interval has elapsed
           await new Promise((r) =>
@@ -52,6 +52,9 @@ export async function runWatch(currentDir, relativeTarget, command, intervalMs) 
           );
         }
         lastPoll = Date.now();
+
+        // Fetch latest commit message on each refresh
+        commitMessage = await getLatestCommitMessage(currentDir);
 
         if (command === "ls") {
           const output = await runGit(buildNumstatArgs(relativeTarget), currentDir);
@@ -66,7 +69,7 @@ export async function runWatch(currentDir, relativeTarget, command, intervalMs) 
         if (content !== prevContent) {
           const dims = getTerminalDimensions();
           const lineCount = content.split("\n").length;
-          const visibleRows = dims.rows - 2;
+          const visibleRows = dims.rows - STATUS_BAR_ROWS;
           const newMaxOffset = Math.max(0, lineCount - visibleRows);
 
           // If user was at bottom, scroll to new bottom; otherwise keep position
@@ -77,7 +80,7 @@ export async function runWatch(currentDir, relativeTarget, command, intervalMs) 
           renderWatchFrame(content, scrollState, commitMessage);
           prevContent = content;
         }
-      } catch (err) {
+      } catch {
         // Ignore transient errors during watch
       } finally {
         refreshTriggered = false;
@@ -140,5 +143,22 @@ export async function runWatch(currentDir, relativeTarget, command, intervalMs) 
     clearInterval(pollTimer);
     clearTimeout(refreshTimer);
     process.exit(0);
+  });
+
+  // Terminal resize: re-render at new dimensions
+  process.on("SIGWINCH", () => {
+    if (prevContent) {
+      const dims = getTerminalDimensions();
+      const lineCount = prevContent.split("\n").length;
+      const visibleRows = dims.rows - STATUS_BAR_ROWS;
+      const newMaxOffset = Math.max(0, lineCount - visibleRows);
+
+      // Clamp scroll offset to new valid range
+      if (scrollState.scrollOffset > newMaxOffset) {
+        scrollState.scrollOffset = newMaxOffset;
+      }
+      scrollState.maxScrollOffset = newMaxOffset;
+      renderWatchFrame(prevContent, scrollState, commitMessage);
+    }
   });
 }

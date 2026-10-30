@@ -6,6 +6,9 @@ export const DEFAULT_INTERVAL_MS = 1000;
 export const MAX_INTERVAL_MS = 60000;
 export const MIN_INTERVAL_MS = 1;
 
+// Status bar layout: 1 row top, 1 row bottom
+export const STATUS_BAR_ROWS = 2;
+
 export const GIT_NO_COLOR = "--no-color";
 export const GIT_NO_EXT_DIFF = "--no-ext-diff";
 export const GIT_NO_RENAMES = "--no-renames";

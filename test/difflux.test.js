@@ -12,7 +12,7 @@ function runCli(args, cwd) {
   try {
     const stdout = execFileSync(
       "node",
-      [CLI, ...args, "--cwd=" + cwd],
+      [CLI, ...args, `--cwd=${cwd}`],
       { encoding: "utf-8", stdio: "pipe" },
     );
     return { stdout, stderr: "", code: 0 };

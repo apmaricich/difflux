@@ -15,6 +15,7 @@ export function parseArgs(argv) {
   const currentDir = cwdArg ? cwdArg.slice("--cwd=".length) : process.cwd();
 
   // Skip node and script name (argv[0] and argv[1])
+  // eslint-disable-next-line no-magic-numbers
   const args = argv.slice(2);
   const command = args.find((a) => !a.startsWith("--"));
   const targetArg =

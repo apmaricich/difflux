@@ -23,7 +23,7 @@ async function main() {
     } = parseArgs(process.argv);
 
     if (isHelpRequested) {
-      process.stdout.write(formatHelp());
+      process.stdout.write(`${formatHelp()}`);
       return;
     }
 
@@ -35,14 +35,14 @@ async function main() {
     if (command === "ls") {
       const output = await runGit(buildNumstatArgs(relativeTarget), currentDir);
       const changedFiles = parseNumstatOutput(output);
-      process.stdout.write(formatTreeOutput(changedFiles) + "\n");
+      process.stdout.write(`${formatTreeOutput(changedFiles)}\n`);
       return;
     }
 
     const diff = await runGit(buildDiffArgs(relativeTarget), currentDir);
     process.stdout.write(formatDiffOutput(diff));
   } catch (err) {
-    process.stderr.write(err.message + "\n");
+    process.stderr.write(`${err.message}\n`);
     process.exit(1);
   }
 }

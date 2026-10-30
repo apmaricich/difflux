@@ -4,7 +4,7 @@
  */
 
 import { execSync } from "node:child_process";
-import { ANSI, TERMINAL } from "./constants.js";
+import { ANSI, TERMINAL, STATUS_BAR_ROWS } from "./constants.js";
 
 /**
  * Get terminal dimensions, falling back to environment variables and defaults.
@@ -55,7 +55,7 @@ export function renderWatchFrame(content, state, commitMessage) {
   const lines = content.split("\n");
   const totalLines = lines.length;
   // Reserve 1 row for top status bar, 1 row for bottom status bar
-  const visibleRows = dims.rows - 2;
+  const visibleRows = dims.rows - STATUS_BAR_ROWS;
 
   // Clamp scroll offset to valid range
   const maxOffset = Math.max(0, totalLines - visibleRows);

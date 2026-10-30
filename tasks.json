@@ -1,0 +1,24 @@
+{
+  "config" : {
+    "tagDisplayLimit" : 0,
+    "command" : [
+      "bug",
+      "feature"
+    ],
+    "lists" : [
+      "backlogTags",
+      "pinTags",
+      "command"
+    ],
+    "sort" : "completed"
+  },
+  "tasks" : [
+    {
+      "createdDate" : 1793320866.0637259,
+      "title" : "Pipe to less",
+      "id" : 1,
+      "completed" : false,
+      "description" : "should pipe to less on default command if the output is larger than the terminal size. "
+    }
+  ]
+}

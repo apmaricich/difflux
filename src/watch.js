@@ -14,11 +14,13 @@ import { STATUS_BAR_ROWS } from "./constants.js";
 /**
  * Read and parse .diffluxignore file, returning ignore patterns.
  * Supports gitignore-style patterns.
+ * @param {string} cwd - Working directory
+ * @returns {string[]} Array of ignore patterns
  */
-function readIgnorePatterns(cwd) {
+export function readIgnorePatterns(cwd) {
   // Read .diffluxignore file if it exists
   const ignoreFile = path.join(cwd, ".diffluxignore");
-  let customPatterns = [];
+  const customPatterns = [];
   try {
     if (fs.existsSync(ignoreFile)) {
       const content = fs.readFileSync(ignoreFile, "utf-8");
@@ -40,8 +42,11 @@ function readIgnorePatterns(cwd) {
 /**
  * Create an ignore function based on patterns.
  * Uses a function instead of glob patterns for better control.
+ * @param {string} cwd - Working directory
+ * @param {string[]} customPatterns - Custom ignore patterns from .diffluxignore
+ * @returns {function} A function that takes a file path and returns true if it should be ignored
  */
-function createIgnoreFunction(cwd, customPatterns) {
+export function createIgnoreFunction(cwd, customPatterns) {
   return (filePath) => {
     // Normalize path to forward slashes
     const normalizedPath = filePath.replace(/\\/g, "/");

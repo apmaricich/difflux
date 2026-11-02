@@ -163,6 +163,26 @@ Terminal controls:
 - `q` — quit the watcher
 - `Ctrl+C` — stop the watcher
 
+### Ignore Files with `.diffluxignore`
+
+Create a `.diffluxignore` file to tell Difflux to ignore specific files and directories when watching for changes. This is useful for excluding build output, generated files, or other noise.
+
+```bash
+echo "dist/" > .diffluxignore
+echo "node_modules/" >> .diffluxignore
+echo "*.log" >> .diffluxignore
+```
+
+The file supports one pattern per line. Lines starting with `#` are comments. Patterns are matched against the full relative path.
+
+By default, Difflux ignores:
+- `node_modules/`
+- `.git/`
+- `dist/`, `build/`, `tmp/`, `coverage/`
+- `.cache/`, `.next/`, `.nuxt/`, `.vite/`
+- `__pycache__/`
+- `*.pyc`, `*.log`, `.DS_Store`
+
 ### Display Help
 
 Show all available commands and options:

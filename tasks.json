@@ -1,25 +1,4 @@
 {
-  "tasks" : [
-    {
-      "description" : "should pipe to less on default command if the output is larger than the terminal size. ",
-      "title" : "Pipe to less",
-      "completed" : false,
-      "id" : 1,
-      "createdDate" : 1793320866.0637259
-    },
-    {
-      "description" : "files in .gitattributes are showing a diff of NNaN when marked for exclusion in a diff. i want any files excluded from the diff to not be shown in either the difflux or difflux ls commands.",
-      "createdDate" : 1793391159.9760451,
-      "title" : "NaN showing for files excluded from diff",
-      "completed" : true,
-      "updatedDate" : 1793391159.9788229,
-      "completedDate" : 1793393680.342051,
-      "id" : 2,
-      "tags" : [
-        "#bug"
-      ]
-    }
-  ],
   "config" : {
     "command" : [
       "bug",
@@ -32,5 +11,41 @@
       "command"
     ],
     "tagDisplayLimit" : 0
-  }
+  },
+  "tasks" : [
+    {
+      "id" : 2,
+      "createdDate" : 1793391159.9760451,
+      "title" : "NaN showing for files excluded from diff",
+      "tags" : [
+        "#bug"
+      ],
+      "completed" : true,
+      "updatedDate" : 1793391159.9788229,
+      "description" : "files in .gitattributes are showing a diff of NNaN when marked for exclusion in a diff. i want any files excluded from the diff to not be shown in either the difflux or difflux ls commands.",
+      "completedDate" : 1793393680.342051
+    },
+    {
+      "tags" : [
+        "#feature"
+      ],
+      "createdDate" : 1793635611.2516079,
+      "id" : 3,
+      "completed" : false,
+      "updatedDate" : 1793635611.2534299,
+      "description" : "i dont like the name of the ls command. please change the difflux ls command to difflux tree. it is more descriptive that way.",
+      "title" : "update ls to tree"
+    },
+    {
+      "description" : "Root cause: Chokidar v5's ignored option with glob patterns doesn't work because anymatch's ** doesn't traverse dot-prefixed path segments.\n\nSolution: Replace glob-based ignored patterns with a function-based approach. The function checks each path against both custom patterns (from .diffluxignore) and default patterns (node_modules, .git, dist, build, tmp, coverage, .cache, .next, .nuxt, .vite, __pycache__, .pyc, .log, .DS_Store).\n\nTested on ~\/Code\/task with 49,000+ files (including plugin\/node_modules with 42,000+ files) - works correctly.",
+      "updatedDate" : 1793646297.0084281,
+      "title" : "difflux ls --watch: too many open files (EMFILE)",
+      "completed" : false,
+      "createdDate" : 1793635764.0604291,
+      "id" : 4,
+      "tags" : [
+        "#bug"
+      ]
+    }
+  ]
 }

@@ -3,12 +3,83 @@
  * Monitors a directory for changes and refreshes the diff view live.
  */
 
+import fs from "fs";
+import path from "path";
 import chokidar from "chokidar";
 import { runGit, buildDiffArgs, buildNumstatArgs, parseNumstatOutput, getLatestCommitMessage } from "./git.js";
 import { formatDiffOutput, formatTreeOutput } from "./format.js";
 import { renderWatchFrame, setupRawInput, getTerminalDimensions } from "./terminal.js";
 import { STATUS_BAR_ROWS } from "./constants.js";
 
+/**
+ * Read and parse .diffluxignore file, returning ignore patterns.
+ * Supports gitignore-style patterns.
+ */
+function readIgnorePatterns(cwd) {
+  // Read .diffluxignore file if it exists
+  const ignoreFile = path.join(cwd, ".diffluxignore");
+  let customPatterns = [];
+  try {
+    if (fs.existsSync(ignoreFile)) {
+      const content = fs.readFileSync(ignoreFile, "utf-8");
+      const lines = content.split("\n");
+      for (const line of lines) {
+        const trimmed = line.trim();
+        if (trimmed && !trimmed.startsWith("#")) {
+          customPatterns.push(trimmed);
+        }
+      }
+    }
+  } catch {
+    // Ignore errors reading .diffluxignore
+  }
+
+  return customPatterns;
+}
+
+/**
+ * Create an ignore function based on patterns.
+ * Uses a function instead of glob patterns for better control.
+ */
+function createIgnoreFunction(cwd, customPatterns) {
+  return (filePath) => {
+    // Normalize path to forward slashes
+    const normalizedPath = filePath.replace(/\\/g, "/");
+
+    // Check custom patterns from .diffluxignore
+    for (const pattern of customPatterns) {
+      if (normalizedPath.includes(pattern)) {
+        return true;
+      }
+    }
+
+    // Default ignore patterns
+    const defaultIgnores = [
+      "/node_modules/",
+      "/.git/",
+      "/dist/",
+      "/build/",
+      "/tmp/",
+      "/coverage/",
+      "/.cache/",
+      "/.next/",
+      "/.nuxt/",
+      "/.vite/",
+      "/__pycache__/",
+      ".pyc",
+      ".log",
+      "/.DS_Store",
+    ];
+
+    for (const pattern of defaultIgnores) {
+      if (normalizedPath.includes(pattern)) {
+        return true;
+      }
+    }
+
+    return false;
+  };
+}
 
 /**
  * Create and manage a watch mode session.
@@ -18,10 +89,22 @@ import { STATUS_BAR_ROWS } from "./constants.js";
  * @param {number} intervalMs - Polling interval.
  */
 export async function runWatch(currentDir, relativeTarget, command, intervalMs) {
-  const watcher = chokidar.watch(relativeTarget || ".", {
+  const customPatterns = readIgnorePatterns(currentDir);
+  const ignoreFn = createIgnoreFunction(currentDir, customPatterns);
+
+  const isMacOS = process.platform === "darwin";
+  const watchOptions = {
     cwd: currentDir,
     ignoreInitial: true,
-  });
+    ignored: ignoreFn,
+  };
+
+  // Use native OS watchers for better performance
+  if (isMacOS) {
+    watchOptions.backend = "native";
+  }
+
+  const watcher = chokidar.watch(relativeTarget || ".", watchOptions);
 
   let refreshTimer = null;
   let lastPoll = Date.now();

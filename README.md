@@ -112,16 +112,16 @@ A clean path produces no diff output.
 
 ### Show Changed Files as a Tree
 
-Use the `ls` command to display changed files with their addition and deletion counts:
+Use the `tree` command to display a tree of changed files with their addition and deletion counts:
 
 ```bash
-difflux ls
+difflux tree
 ```
 
 Or restrict the view to a directory:
 
 ```bash
-difflux ls -- src
+difflux tree -- src
 ```
 
 ### Watch for Live Changes
@@ -142,16 +142,16 @@ The default polling interval is `1000` milliseconds. The `--interval` option acc
 
 ### Watch the Changed-File Tree
 
-Watch the `ls` output as files are added, changed, or removed:
+Watch the `tree` output as files are added, changed, or removed:
 
 ```bash
-difflux ls --watch
+difflux tree --watch
 ```
 
 Customize the polling interval:
 
 ```bash
-difflux ls --watch --interval=250
+difflux tree --watch --interval=250
 ```
 
 Watch mode displays a persistent top status bar showing the most recent commit message and a bottom status bar with scroll position and refresh prompts. The top status bar remains visible while scrolling.

@@ -32,7 +32,7 @@ async function main() {
       return;
     }
 
-    if (command === "ls") {
+    if (command === "tree") {
       const output = await runGit(buildNumstatArgs(relativeTarget), currentDir);
       const changedFiles = parseNumstatOutput(output);
       process.stdout.write(`${formatTreeOutput(changedFiles)}\n`);

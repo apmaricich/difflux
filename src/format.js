@@ -243,13 +243,13 @@ export function formatTreeOutput(changedFiles) {
 export function formatHelp() {
   return `Usage:
   difflux [path]
-  difflux ls [path]
+  difflux tree [path]
   difflux --watch [path]
-  difflux ls --watch [path]
+  difflux tree --watch [path]
   difflux --help
 
 Commands:
-  ls  Show changed files in a tree with additions and deletions
+  tree  Show changed files in a tree with additions and deletions
 
 Options:
   --watch      Watch for changes and refresh live
@@ -263,8 +263,8 @@ Examples:
   difflux src
   difflux --watch
   difflux --watch src
-  difflux ls
-  difflux ls --watch
-  difflux ls --watch src
+  difflux tree
+  difflux tree --watch
+  difflux tree --watch src
 `;
 }

@@ -19,9 +19,14 @@ export function parseArgs(argv) {
   const args = argv.slice(2);
   const command = args.find((a) => !a.startsWith("--"));
   const targetArg =
-    command === "ls"
-      ? args.find((a) => !a.startsWith("--") && a !== "ls")
+    command === "tree"
+      ? args.find((a) => !a.startsWith("--") && a !== "tree")
       : args.find((a) => !a.startsWith("--"));
+
+  // Validate command: only "tree" or path-like args are valid
+  if (command && command !== "tree" && !command.includes("/") && !command.includes(".") && !command.startsWith(".")) {
+    throw new Error(`Invalid command: ${command}. Usage: difflux [tree] [path]`);
+  }
 
   const isHelpRequested = argv.includes("--help");
   const isWatchMode = argv.includes("--watch");

@@ -87,22 +87,22 @@ describe("difflux", () => {
     }
   });
 
-  test("ls shows tree of changed files", async () => {
+  test("tree shows tree of changed files", async () => {
     const repo = await setupRepo();
     try {
       writeFileSync(resolve(repo, "README.md"), "# Test\nChanged\n");
-      const result = runCli(["ls"], repo);
-      assert(result.stdout.includes("README.md"), "ls should show changed file");
+      const result = runCli(["tree"], repo);
+      assert(result.stdout.includes("README.md"), "tree should show changed file");
     } finally {
       rmSync(repo, { recursive: true });
     }
   });
 
-  test("ls shows empty tree on clean repo", async () => {
+  test("tree shows empty tree on clean repo", async () => {
     const repo = await setupRepo();
     try {
-      const result = runCli(["ls"], repo);
-      assert(result.stdout.trim() === ".", "Clean repo ls should show .");
+      const result = runCli(["tree"], repo);
+      assert(result.stdout.trim() === ".", "Clean repo tree should show .");
     } finally {
       rmSync(repo, { recursive: true });
     }
@@ -123,6 +123,17 @@ describe("difflux", () => {
     try {
       const result = runCli(["--interval=60001"], repo);
       assert(result.stderr.includes("Invalid --interval"), "Should reject interval>60000");
+    } finally {
+      rmSync(repo, { recursive: true });
+    }
+  });
+
+  test("rejects invalid command", async () => {
+    const repo = await setupRepo();
+    try {
+      const result = runCli(["foobar"], repo);
+      assert(result.stderr.includes("Invalid command"), "Should reject invalid command");
+      assert(result.code === 1, "Should exit with code 1");
     } finally {
       rmSync(repo, { recursive: true });
     }

@@ -90,7 +90,7 @@ export function createIgnoreFunction(cwd, customPatterns) {
  * Create and manage a watch mode session.
  * @param {string} currentDir - Working directory.
  * @param {string} relativeTarget - Target path to watch.
- * @param {string} command - Command type ("ls" or undefined).
+ * @param {string} command - Command type ("tree" or undefined).
  * @param {number} intervalMs - Polling interval.
  */
 export async function runWatch(currentDir, relativeTarget, command, intervalMs) {
@@ -144,7 +144,7 @@ export async function runWatch(currentDir, relativeTarget, command, intervalMs) 
         // Fetch latest commit message on each refresh
         commitMessage = await getLatestCommitMessage(currentDir);
 
-        if (command === "ls") {
+        if (command === "tree") {
           const output = await runGit(buildNumstatArgs(relativeTarget), currentDir);
           const changedFiles = parseNumstatOutput(output);
           content = formatTreeOutput(changedFiles);
@@ -221,6 +221,18 @@ export async function runWatch(currentDir, relativeTarget, command, intervalMs) 
       if (scrollState.scrollOffset < scrollState.maxScrollOffset) {
         scrollState.scrollOffset++;
       }
+      renderWatchFrame(prevContent, scrollState, commitMessage);
+    }
+
+    // g: jump to top
+    if (key === "g") {
+      scrollState.scrollOffset = 0;
+      renderWatchFrame(prevContent, scrollState, commitMessage);
+    }
+
+    // G: jump to bottom
+    if (key === "G") {
+      scrollState.scrollOffset = scrollState.maxScrollOffset;
       renderWatchFrame(prevContent, scrollState, commitMessage);
     }
   });

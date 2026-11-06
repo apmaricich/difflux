@@ -1,78 +1,86 @@
 {
   "config" : {
-    "tagDisplayLimit" : 0,
-    "showCompleted" : "false",
     "command" : [
       "bug",
       "feature"
     ],
+    "tagDisplayLimit" : 0,
     "sort" : "completed",
     "lists" : [
       "backlogTags",
       "pinTags",
       "command"
-    ]
+    ],
+    "showCompleted" : "false"
   },
   "tasks" : [
     {
-      "createdDate" : 1793391159.9760451,
-      "id" : 2,
-      "title" : "NaN showing for files excluded from diff",
-      "completedDate" : 1793393680.342051,
-      "updatedDate" : 1793391159.9788229,
-      "description" : "files in .gitattributes are showing a diff of NNaN when marked for exclusion in a diff. i want any files excluded from the diff to not be shown in either the difflux or difflux ls commands.",
       "completed" : true,
+      "description" : "files in .gitattributes are showing a diff of NNaN when marked for exclusion in a diff. i want any files excluded from the diff to not be shown in either the difflux or difflux ls commands.",
+      "updatedDate" : 1793391159.9788229,
+      "completedDate" : 1793393680.342051,
+      "id" : 2,
       "tags" : [
         "#bug"
-      ]
+      ],
+      "title" : "NaN showing for files excluded from diff",
+      "createdDate" : 1793391159.9760451
     },
     {
       "createdDate" : 1793635611.2516079,
+      "title" : "update ls to tree",
+      "description" : "i dont like the name of the ls command. please change the difflux ls command to difflux tree. it is more descriptive that way.",
       "id" : 3,
       "completedDate" : 1793713203.0147109,
-      "title" : "update ls to tree",
       "updatedDate" : 1793635611.2534299,
-      "description" : "i dont like the name of the ls command. please change the difflux ls command to difflux tree. it is more descriptive that way.",
       "completed" : true,
       "tags" : [
         "#feature"
       ]
     },
     {
-      "createdDate" : 1793635764.0604291,
-      "id" : 4,
-      "title" : "difflux ls --watch: too many open files (EMFILE)",
-      "completedDate" : 1793646691.9312401,
       "updatedDate" : 1793646297.0084281,
+      "completedDate" : 1793646691.9312401,
+      "title" : "difflux ls --watch: too many open files (EMFILE)",
+      "createdDate" : 1793635764.0604291,
       "description" : "Root cause: Chokidar v5's ignored option with glob patterns doesn't work because anymatch's ** doesn't traverse dot-prefixed path segments.\n\nSolution: Replace glob-based ignored patterns with a function-based approach. The function checks each path against both custom patterns (from .diffluxignore) and default patterns (node_modules, .git, dist, build, tmp, coverage, .cache, .next, .nuxt, .vite, __pycache__, .pyc, .log, .DS_Store).\n\nTested on ~\/Code\/task with 49,000+ files (including plugin\/node_modules with 42,000+ files) - works correctly.",
-      "completed" : true,
       "tags" : [
         "#bug"
-      ]
+      ],
+      "completed" : true,
+      "id" : 4
     },
     {
       "createdDate" : 1793654636.6111259,
       "id" : 5,
-      "title" : "add g and G support",
+      "description" : "when in --watch mode, g should be used to jump to the top and G should be used to jump to the last line.",
       "completedDate" : 1793712909.3365979,
       "updatedDate" : 1793654636.6137409,
-      "description" : "when in --watch mode, g should be used to jump to the top and G should be used to jump to the last line.",
-      "completed" : true,
+      "title" : "add g and G support",
       "tags" : [
         "#feature"
-      ]
+      ],
+      "completed" : true
     },
     {
       "createdDate" : 1793712600.949528,
-      "id" : 6,
-      "title" : "invalid command message",
-      "completedDate" : 1793712722.1826401,
-      "updatedDate" : 1793712600.9527421,
-      "description" : "if a user enters an invalid command, it should let the user know it is not a valid command.",
       "completed" : true,
+      "description" : "if a user enters an invalid command, it should let the user know it is not a valid command.",
+      "id" : 6,
+      "completedDate" : 1793712722.1826401,
       "tags" : [
         "#feature"
-      ]
+      ],
+      "title" : "invalid command message",
+      "updatedDate" : 1793712600.9527421
+    },
+    {
+      "completed" : true,
+      "createdDate" : 1793837748.266324,
+      "description" : "add an mit license file and update the readme to include the license details. ",
+      "completedDate" : 1793839670.3012428,
+      "title" : "license file",
+      "id" : 7
     }
   ]
 }

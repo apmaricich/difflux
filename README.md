@@ -2,8 +2,8 @@
 
 > A clear, live view of changes made in a Git repository—especially changes created by AI agents.
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![CI](https://img.shields.io/badge/CI-not%20configured-lightgrey)](https://github.com/apmaricich/difflux/actions)
-[![License](https://img.shields.io/badge/License-unspecified-lightgrey)](./LICENSE)
 [![Version](https://img.shields.io/badge/Version-unreleased-lightgrey)](https://www.npmjs.com/package/difflux)
 
 ## About the Project
@@ -227,9 +227,7 @@ Difflux uses Node.js's built-in `node:test` runner. There are currently no linti
 
 ## License
 
-**License: Unspecified**
-
-The repository does not currently contain a `LICENSE` file. Before publishing Difflux for external reuse, add an appropriate license and update the license badge and link above.
+MIT — see [LICENSE](LICENSE) for details.
 
 ## Contact
 

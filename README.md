@@ -191,6 +191,41 @@ Show all available commands and options:
 difflux --help
 ```
 
+## OpenCode Plugin
+
+Difflux includes an OpenCode TUI plugin that displays the changed-files tree in your sidebar, automatically refreshing every 30 seconds. This gives you live visibility into what's being modified without needing to manually run `difflux tree`.
+
+### Features
+
+- Displays the `difflux tree` output directly in the OpenCode sidebar
+- Auto-refreshes every 30 seconds to show new changes
+- Preserves ANSI color formatting for additions and deletions
+- Runs in the current OpenCode workspace directory
+
+### Installation
+
+The plugin is located in the `plugin-tree/` directory of this repository. To install:
+
+```bash
+# Copy the plugin to OpenCode's plugins directory
+cp -r plugin-tree ~/.config/opencode/plugins/
+```
+
+### Configuration
+
+Add the plugin to your OpenCode server configuration (`~/.config/opencode/opencode.jsonc`):
+
+```jsonc
+{
+  "plugins": [
+    // ... other plugins
+    "./plugins/plugin-tree"
+  ]
+}
+```
+
+Restart OpenCode after installing or configuring the plugin.
+
 ## Project Structure
 
 ```text
@@ -199,6 +234,12 @@ difflux/
 ├── index.js               # CLI entry point
 ├── package.json           # Package metadata, binary, and scripts
 ├── package-lock.json      # Reproducible dependency versions
+├── plugin-tree/           # OpenCode TUI plugin
+│   ├── src/
+│   │   ├── index.ts       # Plugin server definition
+│   │   ├── tui.tsx        # Plugin TUI component
+│   │   └── ansi.ts        # ANSI color parser
+│   └── package.json       # Plugin package metadata
 ├── src/
 │   ├── cli.js             # CLI argument parsing
 │   ├── constants.js       # ANSI codes and configuration constants

@@ -16,13 +16,15 @@ const DEFAULT_CONFIG = {
 
 /**
  * Read and validate the user's difflux configuration.
+ * @param {string|null} [configPath] - Override path for config file (used in tests).
  * @returns {object} Validated configuration object.
  * @throws {Error} If the config file exists but contains invalid JSON.
  * @throws {Error} If the context value is not a non-negative integer.
  */
-export function readConfig() {
+export function readConfig(configPath = null) {
+  const file = configPath || CONFIG_FILE;
   try {
-    const raw = readFileSync(CONFIG_FILE, "utf8");
+    const raw = readFileSync(file, "utf8");
     const config = JSON.parse(raw);
 
     if (config.context !== undefined) {

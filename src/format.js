@@ -305,9 +305,10 @@ Commands:
   tree  Show changed files in a tree with additions and deletions
 
 Options:
-  --watch      Watch for changes and refresh live
-  --interval=N Poll interval in milliseconds (default: 1000, max: 60000)
-  --context=N  Number of context lines in diff (default: 0, max: 100)
+  --watch        Watch for changes and refresh live
+  --interval=N   Poll interval in milliseconds (default: 1000, max: 60000)
+  --context=N    Number of context lines in diff (default: 0, max: 100)
+  --config=PATH  Path to config file (default: ~/.config/difflux/config.json)
 
 Arguments:
   path  Optional path within the current directory to inspect

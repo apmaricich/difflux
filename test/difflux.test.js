@@ -8,11 +8,43 @@ import assert from "node:assert";
 
 const CLI = resolve(fileURLToPath(import.meta.url), "../..", "index.js");
 
+// Create an empty config file to prevent the user's config from affecting tests
+const TEST_CONFIG_DIR = mkdtempSync(resolve(tmpdir(), "difflux-test-config-"));
+const TEST_CONFIG_PATH = resolve(TEST_CONFIG_DIR, "config.json");
+writeFileSync(TEST_CONFIG_PATH, JSON.stringify({ context: 0 }));
+
 function runCli(args, cwd) {
   try {
+    // Always pass an explicit config path so user's config doesn't interfere
+    const allArgs = [...args, "--config=" + TEST_CONFIG_PATH, "--cwd=" + cwd];
     const stdout = execFileSync(
       "node",
-      [CLI, ...args, `--cwd=${cwd}`],
+      [CLI, ...allArgs],
+      { encoding: "utf-8", stdio: "pipe" },
+    );
+    return { stdout, stderr: "", code: 0 };
+  } catch (err) {
+    return {
+      stdout: err.stdout || "",
+      stderr: err.stderr || "",
+      code: err.code ?? 1,
+    };
+  }
+}
+
+/**
+ * Run CLI with an explicit config file (for tests that test config behavior).
+ * @param {string} configPath - Path to config file
+ * @param {string[]} args - Additional CLI arguments
+ * @param {string} cwd - Working directory
+ * @returns {object} Command result
+ */
+function runCliWithConfig(configPath, args, cwd) {
+  try {
+    const allArgs = ["--config=" + configPath, ...args, "--cwd=" + cwd];
+    const stdout = execFileSync(
+      "node",
+      [CLI, ...allArgs],
       { encoding: "utf-8", stdio: "pipe" },
     );
     return { stdout, stderr: "", code: 0 };
@@ -231,17 +263,13 @@ describe("difflux", () => {
 
   test("config file with context value produces correct output", async () => {
     const repo = createContextTestFile(await setupRepo());
+    const tmpDir = mkdtempSync(resolve(tmpdir(), "difflux-test-config-"));
     try {
-      // Create config file with context=3
-      const { homedir } = await import("node:os");
-      const { join } = await import("node:path");
-      const { mkdirSync, writeFileSync: fsWrite } = await import("node:fs");
-      const configDir = join(homedir(), ".config", "difflux");
-      mkdirSync(configDir, { recursive: true });
-      fsWrite(join(configDir, "config.json"), JSON.stringify({ context: 3 }));
+      const configPath = resolve(tmpDir, "config.json");
+      writeFileSync(configPath, JSON.stringify({ context: 3 }));
 
       modifyLine5(repo);
-      const result = runCli([], repo);
+      const result = runCliWithConfig(configPath, [], repo);
 
       // With config context=3, should show 3 lines above and below
       assert(result.stdout.includes("line 5 MODIFIED"), "Should show modified line");
@@ -255,24 +283,22 @@ describe("difflux", () => {
       );
     } finally {
       rmSync(repo, { recursive: true });
+      rmSync(tmpDir, { recursive: true });
     }
   });
 
   test("CLI flag overrides config file (CLI takes precedence)", async () => {
     const repo = createContextTestFile(await setupRepo());
+    const tmpDir = mkdtempSync(resolve(tmpdir(), "difflux-test-config-"));
     try {
       // Create config file with context=5
-      const { homedir } = await import("node:os");
-      const { join } = await import("node:path");
-      const { mkdirSync, writeFileSync: fsWrite } = await import("node:fs");
-      const configDir = join(homedir(), ".config", "difflux");
-      mkdirSync(configDir, { recursive: true });
-      fsWrite(join(configDir, "config.json"), JSON.stringify({ context: 5 }));
+      const configPath = resolve(tmpDir, "config.json");
+      writeFileSync(configPath, JSON.stringify({ context: 5 }));
 
       modifyLine5(repo);
 
       // Use CLI --context=1 (overrides config's 5)
-      const result = runCli(["--context=1"], repo);
+      const result = runCliWithConfig(configPath, ["--context=1"], repo);
 
       // Should show context=1 behavior (1 line above and below)
       assert(result.stdout.includes("line 5 MODIFIED"), "Should show modified line");
@@ -291,6 +317,7 @@ describe("difflux", () => {
       );
     } finally {
       rmSync(repo, { recursive: true });
+      rmSync(tmpDir, { recursive: true });
     }
   });
 
@@ -382,16 +409,13 @@ describe("difflux", () => {
 
   test("config file with context=0 works correctly", async () => {
     const repo = createContextTestFile(await setupRepo());
+    const tmpDir = mkdtempSync(resolve(tmpdir(), "difflux-test-config-"));
     try {
-      const { homedir } = await import("node:os");
-      const { join } = await import("node:path");
-      const { mkdirSync, writeFileSync: fsWrite } = await import("node:fs");
-      const configDir = join(homedir(), ".config", "difflux");
-      mkdirSync(configDir, { recursive: true });
-      fsWrite(join(configDir, "config.json"), JSON.stringify({ context: 0 }));
+      const configPath = resolve(tmpDir, "config.json");
+      writeFileSync(configPath, JSON.stringify({ context: 0 }));
 
       modifyLine5(repo);
-      const result = runCli([], repo);
+      const result = runCliWithConfig(configPath, [], repo);
       assert(result.stdout.includes("line 5 MODIFIED"), "Should show modified line");
       assert(
         !result.stdout.includes("line 3"),
@@ -403,6 +427,7 @@ describe("difflux", () => {
       );
     } finally {
       rmSync(repo, { recursive: true });
+      rmSync(tmpDir, { recursive: true });
     }
   });
 

@@ -34,6 +34,9 @@ export function parseArgs(argv) {
   const isHelpRequested = argv.includes("--help");
   const isWatchMode = argv.includes("--watch");
 
+  const configArg = argv.find((a) => a.startsWith("--config="));
+  const configPath = configArg ? configArg.slice("--config=".length) : null;
+
   const intervalArg = argv.find((a) => a.startsWith("--interval="));
   const intervalMs = intervalArg
     ? Number.parseInt(intervalArg.slice("--interval=".length), 10)
@@ -50,7 +53,7 @@ export function parseArgs(argv) {
   }
 
   // Read config file for defaults
-  const config = readConfig();
+  const config = readConfig(configPath);
 
   const contextArg = argv.find((a) => a.startsWith("--context="));
   const contextLines = contextArg

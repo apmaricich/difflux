@@ -240,7 +240,7 @@ export function formatTreeOutput(changedFiles, untrackedFiles) {
         ...renderUntracked(untrackedRoot, ""),
       ].join("\n");
     }
-    return ".";
+    return "Working tree clean.";
   }
 
   const changedRoot = buildTree(changedFiles);

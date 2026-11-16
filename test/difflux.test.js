@@ -130,7 +130,10 @@ describe("difflux", () => {
     const repo = await setupRepo();
     try {
       const result = runCli(["tree"], repo);
-      assert(result.stdout.trim() === ".", "Clean repo tree should show .");
+      assert(
+        result.stdout.trim() === "Working tree clean.",
+        "Clean repo tree should show 'Working tree clean.'",
+      );
     } finally {
       rmSync(repo, { recursive: true });
     }

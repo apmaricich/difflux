@@ -15,6 +15,8 @@
 - Git exit code 1 from `git diff` is treated as success (no changes); actual failures are rejected.
 - `--no-ext-diff` is passed to Git to prevent external diff programs from executing.
 - `--interval` is validated as a finite positive integer between 1 and 60000 milliseconds.
+- `--context=N` specifies the number of context lines in diff output (default 0, max 100). CLI flag overrides config.
+- Config file support: reads `~/.config/difflux/config.json` for default values (e.g., `{"context": 3}`).
 - Terminal control characters are sanitized from repository content before display.
 - Node built-in `node:test` coverage exists for CLI behavior, interval validation, path validation, and empty/changed state.
 - `chokidar@^5.0.0` is used for filesystem monitoring, compatible with Node.js `>=20.19.0`.

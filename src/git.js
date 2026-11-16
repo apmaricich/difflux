@@ -35,12 +35,13 @@ export function runGit(args, cwd) {
 /**
  * Build git diff arguments for the unified diff view.
  * @param {string} target - Target path (relative to cwd).
+ * @param {number} [contextLines] - Number of context lines (default: 0).
  * @returns {string[]} Git command arguments.
  */
-export function buildDiffArgs(target) {
+export function buildDiffArgs(target, contextLines) {
   return [
     "diff",
-    GIT_UNIFIED_0,
+    `--unified=${contextLines ?? 0}`,
     GIT_NO_COLOR,
     GIT_NO_EXT_DIFF,
     "HEAD",

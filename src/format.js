@@ -254,13 +254,20 @@ Commands:
 Options:
   --watch      Watch for changes and refresh live
   --interval=N Poll interval in milliseconds (default: 1000, max: 60000)
+  --context=N  Number of context lines in diff (default: 0, max: 100)
 
 Arguments:
   path  Optional path within the current directory to inspect
 
+Config file:
+  Difflux reads settings from ~/.config/difflux/config.json. Available settings:
+    { "context": 3 }  // default context lines (0-100)
+  CLI flags override config file values.
+
 Examples:
   difflux
   difflux src
+  difflux --context=3 src
   difflux --watch
   difflux --watch src
   difflux tree

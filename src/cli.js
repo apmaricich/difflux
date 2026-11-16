@@ -4,6 +4,9 @@
 
 import { resolve, relative, isAbsolute } from "node:path";
 import { DEFAULT_INTERVAL_MS, MAX_INTERVAL_MS } from "./constants.js";
+import { readConfig } from "./config.js";
+
+const MAX_CONTEXT_LINES = 100;
 
 /**
  * Parse CLI arguments.
@@ -46,6 +49,24 @@ export function parseArgs(argv) {
     );
   }
 
+  // Read config file for defaults
+  const config = readConfig();
+
+  const contextArg = argv.find((a) => a.startsWith("--context="));
+  const contextLines = contextArg
+    ? Number.parseInt(contextArg.slice("--context=".length), 10)
+    : config.context;
+
+  if (
+    contextArg &&
+    (!Number.isInteger(contextLines) || contextLines < 0 || contextLines > MAX_CONTEXT_LINES)
+  ) {
+    throw new Error(
+      `Invalid --context: ${contextArg.slice("--context=".length)}. ` +
+        `Must be a non-negative integer between 0 and ${MAX_CONTEXT_LINES}.`,
+    );
+  }
+
   const targetPath = targetArg
     ? resolve(currentDir, targetArg)
     : currentDir;
@@ -64,5 +85,6 @@ export function parseArgs(argv) {
     isHelpRequested,
     isWatchMode,
     intervalMs,
+    contextLines,
   };
 }

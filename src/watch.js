@@ -92,8 +92,9 @@ export function createIgnoreFunction(cwd, customPatterns) {
  * @param {string} relativeTarget - Target path to watch.
  * @param {string} command - Command type ("tree" or undefined).
  * @param {number} intervalMs - Polling interval.
+ * @param {number} [contextLines] - Number of context lines (default: 0).
  */
-export async function runWatch(currentDir, relativeTarget, command, intervalMs) {
+export async function runWatch(currentDir, relativeTarget, command, intervalMs, contextLines) {
   const customPatterns = readIgnorePatterns(currentDir);
   const ignoreFn = createIgnoreFunction(currentDir, customPatterns);
 
@@ -149,7 +150,7 @@ export async function runWatch(currentDir, relativeTarget, command, intervalMs) 
           const changedFiles = parseNumstatOutput(output);
           content = formatTreeOutput(changedFiles);
         } else {
-          const output = await runGit(buildDiffArgs(relativeTarget), currentDir);
+          const output = await runGit(buildDiffArgs(relativeTarget, contextLines), currentDir);
           content = formatDiffOutput(output);
         }
 

@@ -20,6 +20,7 @@ async function main() {
       isHelpRequested,
       isWatchMode,
       intervalMs,
+      contextLines,
     } = parseArgs(process.argv);
 
     if (isHelpRequested) {
@@ -28,7 +29,7 @@ async function main() {
     }
 
     if (isWatchMode) {
-      await runWatch(currentDir, relativeTarget, command, intervalMs);
+      await runWatch(currentDir, relativeTarget, command, intervalMs, contextLines);
       return;
     }
 
@@ -39,7 +40,7 @@ async function main() {
       return;
     }
 
-    const diff = await runGit(buildDiffArgs(relativeTarget), currentDir);
+    const diff = await runGit(buildDiffArgs(relativeTarget, contextLines), currentDir);
     process.stdout.write(formatDiffOutput(diff));
   } catch (err) {
     process.stderr.write(`${err.message}\n`);

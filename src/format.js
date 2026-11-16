@@ -317,6 +317,16 @@ Config file:
     { "context": 3 }  // default context lines (0-100)
   CLI flags override config file values.
 
+Keyboard shortcuts (watch mode):
+  q         Quit
+  r         Refresh (keep scroll position)
+  k         Scroll up
+  j         Scroll down
+  g         Jump to top
+  G         Jump to bottom
+  Page Up   Scroll up one page
+  Page Down Scroll down one page
+
 Examples:
   difflux
   difflux src

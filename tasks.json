@@ -1,349 +1,387 @@
 {
-  "config" : {
-    "agentTags" : [
-      "#working"
-    ],
-    "sort" : "completed",
-    "tagDisplayLimit" : 0,
-    "lists" : [
-      "backlogTags",
-      "pinTags",
-      "command"
-    ],
-    "command" : [
-      "bug",
-      "feature"
-    ],
-    "showCompleted" : "false"
-  },
   "tasks" : [
     {
-      "completed" : true,
-      "createdDate" : 1793391159.9760451,
-      "description" : "files in .gitattributes are showing a diff of NNaN when marked for exclusion in a diff. i want any files excluded from the diff to not be shown in either the difflux or difflux ls commands.",
-      "title" : "NaN showing for files excluded from diff",
-      "completedDate" : 1793393680.342051,
       "id" : 2,
-      "updatedDate" : 1793391159.9788229,
+      "createdDate" : 1793391159.9760451,
+      "completedDate" : 1793393680.342051,
+      "completed" : true,
+      "title" : "NaN showing for files excluded from diff",
+      "description" : "files in .gitattributes are showing a diff of NNaN when marked for exclusion in a diff. i want any files excluded from the diff to not be shown in either the difflux or difflux ls commands.",
       "tags" : [
         "#bug"
-      ]
+      ],
+      "updatedDate" : 1793391159.9788229
     },
     {
-      "description" : "i dont like the name of the ls command. please change the difflux ls command to difflux tree. it is more descriptive that way.",
-      "id" : 3,
-      "completed" : true,
+      "createdDate" : 1793635611.2516079,
+      "updatedDate" : 1793635611.2534299,
+      "title" : "update ls to tree",
+      "completedDate" : 1793713203.0147109,
       "tags" : [
         "#feature"
       ],
-      "completedDate" : 1793713203.0147109,
-      "createdDate" : 1793635611.2516079,
-      "title" : "update ls to tree",
-      "updatedDate" : 1793635611.2534299
+      "id" : 3,
+      "description" : "i dont like the name of the ls command. please change the difflux ls command to difflux tree. it is more descriptive that way.",
+      "completed" : true
     },
     {
-      "completedDate" : 1793646691.9312401,
-      "completed" : true,
-      "title" : "difflux ls --watch: too many open files (EMFILE)",
+      "createdDate" : 1793635764.0604291,
       "updatedDate" : 1793646297.0084281,
       "tags" : [
         "#bug"
       ],
-      "description" : "Root cause: Chokidar v5's ignored option with glob patterns doesn't work because anymatch's ** doesn't traverse dot-prefixed path segments.\n\nSolution: Replace glob-based ignored patterns with a function-based approach. The function checks each path against both custom patterns (from .diffluxignore) and default patterns (node_modules, .git, dist, build, tmp, coverage, .cache, .next, .nuxt, .vite, __pycache__, .pyc, .log, .DS_Store).\n\nTested on ~\/Code\/task with 49,000+ files (including plugin\/node_modules with 42,000+ files) - works correctly.",
+      "completedDate" : 1793646691.9312401,
+      "title" : "difflux ls --watch: too many open files (EMFILE)",
+      "completed" : true,
       "id" : 4,
-      "createdDate" : 1793635764.0604291
+      "description" : "Root cause: Chokidar v5's ignored option with glob patterns doesn't work because anymatch's ** doesn't traverse dot-prefixed path segments.\n\nSolution: Replace glob-based ignored patterns with a function-based approach. The function checks each path against both custom patterns (from .diffluxignore) and default patterns (node_modules, .git, dist, build, tmp, coverage, .cache, .next, .nuxt, .vite, __pycache__, .pyc, .log, .DS_Store).\n\nTested on ~\/Code\/task with 49,000+ files (including plugin\/node_modules with 42,000+ files) - works correctly."
     },
     {
-      "createdDate" : 1793654636.6111259,
-      "description" : "when in --watch mode, g should be used to jump to the top and G should be used to jump to the last line.",
-      "title" : "add g and G support",
-      "id" : 5,
       "updatedDate" : 1793654636.6137409,
-      "completed" : true,
+      "completedDate" : 1793712909.3365979,
       "tags" : [
         "#feature"
       ],
-      "completedDate" : 1793712909.3365979
+      "id" : 5,
+      "completed" : true,
+      "title" : "add g and G support",
+      "createdDate" : 1793654636.6111259,
+      "description" : "when in --watch mode, g should be used to jump to the top and G should be used to jump to the last line."
     },
     {
-      "updatedDate" : 1793712600.9527421,
-      "createdDate" : 1793712600.949528,
-      "completed" : true,
-      "id" : 6,
-      "completedDate" : 1793712722.1826401,
       "description" : "if a user enters an invalid command, it should let the user know it is not a valid command.",
+      "completedDate" : 1793712722.1826401,
+      "id" : 6,
+      "completed" : true,
+      "updatedDate" : 1793712600.9527421,
+      "title" : "invalid command message",
+      "createdDate" : 1793712600.949528,
       "tags" : [
         "#feature"
-      ],
-      "title" : "invalid command message"
+      ]
     },
     {
-      "completedDate" : 1793839670.3012428,
-      "createdDate" : 1793837748.266324,
       "description" : "add an mit license file and update the readme to include the license details. ",
+      "id" : 7,
+      "createdDate" : 1793837748.266324,
+      "completedDate" : 1793839670.3012428,
       "completed" : true,
-      "title" : "license file",
-      "id" : 7
+      "title" : "license file"
     },
     {
-      "completedDate" : 1794854699.041512,
+      "id" : 8,
+      "title" : "opencode plugin",
+      "createdDate" : 1794845246.574322,
       "completed" : true,
-      "description" : "create an opencode plugin in the \/plugin-tree directory that can be used by opencode to display the output of the `difflux tree` command. This should refresh on an 30 second interval so we can see what files are being updated in the sidebar. title of item should be `difflux ",
       "tags" : [
         "#feature"
       ],
-      "createdDate" : 1794845246.574322,
       "updatedDate" : 1794845246.577261,
-      "id" : 8,
-      "title" : "opencode plugin"
+      "completedDate" : 1794854699.041512,
+      "description" : "create an opencode plugin in the \/plugin-tree directory that can be used by opencode to display the output of the `difflux tree` command. This should refresh on an 30 second interval so we can see what files are being updated in the sidebar. title of item should be `difflux "
     },
     {
-      "completed" : true,
-      "id" : 9,
       "tags" : [
         "#working"
       ],
+      "description" : "Create plugin-tree\/package.json with name 'opencode-difflux-tree', type module, exports for . and .\/tui, dependencies on @opencode\/plugin latest, and peerDependencies for @opentui\/core >=0.6.6, @opentui\/solid >=0.6.6, solid-js >=1.9.0",
       "updatedDate" : 1794846253.8647819,
-      "createdDate" : 1794846227.3430572,
-      "title" : "Create plugin package.json",
       "completedDate" : 1794846329.095567,
-      "description" : "Create plugin-tree\/package.json with name 'opencode-difflux-tree', type module, exports for . and .\/tui, dependencies on @opencode\/plugin latest, and peerDependencies for @opentui\/core >=0.6.6, @opentui\/solid >=0.6.6, solid-js >=1.9.0"
-    },
-    {
-      "id" : 10,
-      "createdDate" : 1794846227.3490219,
-      "tags" : [
-        "#working"
-      ],
-      "updatedDate" : 1794846332.536464,
-      "title" : "Create server plugin definition",
-      "completed" : true,
-      "completedDate" : 1794846385.132405,
-      "description" : "Create plugin-tree\/index.ts that exports a Plugin defined with id 'difflux' and a setup function that logs '[difflux] Server plugin loaded' to stderr"
-    },
-    {
-      "title" : "Copy ANSI parser from task-stats",
-      "tags" : [
-        "#working"
-      ],
-      "id" : 11,
-      "completedDate" : 1794846510.6032948,
-      "description" : "Copy src\/ansi.ts from \/Users\/apmaricich\/Code\/task\/task-stats\/src\/ansi.ts to plugin-tree\/src\/ansi.ts",
-      "updatedDate" : 1794846389.7753549,
-      "completed" : true,
-      "createdDate" : 1794846227.3544068
-    },
-    {
-      "updatedDate" : 1794846513.564939,
-      "completedDate" : 1794846599.1933441,
-      "completed" : true,
-      "createdDate" : 1794846227.358938,
-      "description" : "Create plugin-tree\/src\/tui.tsx that defines a Plugin with id 'difflux.tui'. On setup: use createSignal for stats, implement refresh() that runs 'node \/Users\/apmaricich\/Code\/difflux\/index.js tree' via child_process.exec with cwd set to ctx.location?.directory ?? process.cwd(), parse ANSI output with parseAnsi(), set signal, call refresh() once immediately, then setInterval(refresh, 30000). Return ctx.ui.slot with append: 'sidebar.content' that renders the parsed segments as styled text spans. Include colorToCode() and toOpenTuiStyle() helpers.",
-      "tags" : [
-        "#working"
-      ],
-      "title" : "Implement TUI sidebar panel",
-      "id" : 12
-    },
-    {
-      "completedDate" : 1794846868.78736,
-      "id" : 13,
-      "description" : "Create symlink: ln -s \/Users\/apmaricich\/Code\/difflux\/plugin-tree ~\/.config\/opencode\/plugins\/plugin-tree",
-      "updatedDate" : 1794846603.2429891,
-      "createdDate" : 1794846227.364579,
-      "tags" : [
-        "#working"
-      ],
-      "completed" : true,
-      "title" : "Symlink plugin to OpenCode config"
-    },
-    {
-      "tags" : [
-        "#working"
-      ],
-      "createdDate" : 1794846227.3704591,
-      "title" : "Update OpenCode global config",
-      "description" : "Edit ~\/.config\/opencode\/cli.json to add 'plugin-tree' to the plugins array",
-      "completedDate" : 1794846928.711448,
-      "id" : 14,
-      "updatedDate" : 1794846879.025444,
+      "title" : "Create plugin package.json",
+      "id" : 9,
+      "createdDate" : 1794846227.3430572,
       "completed" : true
     },
     {
+      "id" : 10,
+      "completedDate" : 1794846385.132405,
+      "tags" : [
+        "#working"
+      ],
+      "description" : "Create plugin-tree\/index.ts that exports a Plugin defined with id 'difflux' and a setup function that logs '[difflux] Server plugin loaded' to stderr",
+      "updatedDate" : 1794846332.536464,
+      "title" : "Create server plugin definition",
+      "createdDate" : 1794846227.3490219,
+      "completed" : true
+    },
+    {
+      "title" : "Copy ANSI parser from task-stats",
+      "updatedDate" : 1794846389.7753549,
+      "description" : "Copy src\/ansi.ts from \/Users\/apmaricich\/Code\/task\/task-stats\/src\/ansi.ts to plugin-tree\/src\/ansi.ts",
+      "createdDate" : 1794846227.3544068,
+      "completedDate" : 1794846510.6032948,
+      "completed" : true,
+      "tags" : [
+        "#working"
+      ],
+      "id" : 11
+    },
+    {
+      "description" : "Create plugin-tree\/src\/tui.tsx that defines a Plugin with id 'difflux.tui'. On setup: use createSignal for stats, implement refresh() that runs 'node \/Users\/apmaricich\/Code\/difflux\/index.js tree' via child_process.exec with cwd set to ctx.location?.directory ?? process.cwd(), parse ANSI output with parseAnsi(), set signal, call refresh() once immediately, then setInterval(refresh, 30000). Return ctx.ui.slot with append: 'sidebar.content' that renders the parsed segments as styled text spans. Include colorToCode() and toOpenTuiStyle() helpers.",
+      "id" : 12,
+      "updatedDate" : 1794846513.564939,
+      "createdDate" : 1794846227.358938,
+      "tags" : [
+        "#working"
+      ],
+      "completed" : true,
+      "title" : "Implement TUI sidebar panel",
+      "completedDate" : 1794846599.1933441
+    },
+    {
+      "title" : "Symlink plugin to OpenCode config",
+      "description" : "Create symlink: ln -s \/Users\/apmaricich\/Code\/difflux\/plugin-tree ~\/.config\/opencode\/plugins\/plugin-tree",
+      "updatedDate" : 1794846603.2429891,
+      "completedDate" : 1794846868.78736,
+      "completed" : true,
+      "id" : 13,
+      "tags" : [
+        "#working"
+      ],
+      "createdDate" : 1794846227.364579
+    },
+    {
+      "completed" : true,
+      "description" : "Edit ~\/.config\/opencode\/cli.json to add 'plugin-tree' to the plugins array",
+      "title" : "Update OpenCode global config",
+      "tags" : [
+        "#working"
+      ],
+      "updatedDate" : 1794846879.025444,
+      "createdDate" : 1794846227.3704591,
+      "completedDate" : 1794846928.711448,
+      "id" : 14
+    },
+    {
+      "description" : "add a config file that difflux reads from in ~\/.config\/difflux directory. it should provide a lines above and below context config that will show lines above or below the changes that were made in the diff output.",
+      "createdDate" : 1794854781.888459,
+      "completedDate" : 1794856231.8242579,
       "updatedDate" : 1794854781.890732,
       "title" : "add config with line context",
-      "completedDate" : 1794856231.8242579,
-      "description" : "add a config file that difflux reads from in ~\/.config\/difflux directory. it should provide a lines above and below context config that will show lines above or below the changes that were made in the diff output.",
       "completed" : true,
-      "createdDate" : 1794854781.888459,
       "tags" : [
         "#feature"
       ],
       "id" : 15
     },
     {
-      "completedDate" : 1794855958.6532631,
+      "completed" : true,
       "id" : 16,
-      "createdDate" : 1794855016.277606,
+      "completedDate" : 1794855958.6532631,
+      "description" : "Create src\/config.js module that reads JSON config from ~\/.config\/difflux\/config.json. Handle missing file (return defaults) and invalid JSON (throw clear error). Support 'context' key for line context settings.",
       "tags" : [
 
       ],
-      "completed" : true,
       "updatedDate" : 1794855954.123333,
-      "description" : "Create src\/config.js module that reads JSON config from ~\/.config\/difflux\/config.json. Handle missing file (return defaults) and invalid JSON (throw clear error). Support 'context' key for line context settings.",
-      "title" : "Add config file support to ~\/.config\/difflux"
+      "title" : "Add config file support to ~\/.config\/difflux",
+      "createdDate" : 1794855016.277606
     },
     {
       "tags" : [
         "#working",
         "#context"
       ],
-      "completedDate" : 1794855263.5009232,
-      "id" : 17,
       "description" : "Modify src\/cli.js to accept --context=N flag. Validate value is non-negative integer <= 100. Pass contextLines through parsed result object.",
+      "id" : 17,
       "createdDate" : 1794855020.7951241,
-      "title" : "Add --context=N CLI flag support",
+      "completedDate" : 1794855263.5009232,
+      "completed" : true,
       "updatedDate" : 1794855263.4951749,
-      "completed" : true
+      "title" : "Add --context=N CLI flag support"
     },
     {
-      "description" : "Modify src\/git.js buildDiffArgs to accept contextLines parameter. Use --unified=N instead of hardcoded --unified=0. Update index.js and src\/watch.js to pass context through.",
-      "title" : "Wire context config through to git diff command",
-      "completed" : true,
-      "updatedDate" : 1794855480.054055,
-      "completedDate" : 1794855480.059664,
       "id" : 18,
       "createdDate" : 1794855024.6401939,
+      "updatedDate" : 1794855480.054055,
       "tags" : [
         "#working",
         "#context"
-      ]
+      ],
+      "completed" : true,
+      "completedDate" : 1794855480.059664,
+      "description" : "Modify src\/git.js buildDiffArgs to accept contextLines parameter. Use --unified=N instead of hardcoded --unified=0. Update index.js and src\/watch.js to pass context through.",
+      "title" : "Wire context config through to git diff command"
     },
     {
       "id" : 19,
+      "description" : "Add tests to test\/difflux.test.js: default context=0, config override, CLI flag override, validation errors, watch mode respects context. Run full test suite.",
+      "completed" : true,
+      "completedDate" : 1794855925.9943151,
       "tags" : [
         "#working",
         "#context"
       ],
-      "title" : "Write tests for context feature",
-      "completedDate" : 1794855925.9943151,
-      "description" : "Add tests to test\/difflux.test.js: default context=0, config override, CLI flag override, validation errors, watch mode respects context. Run full test suite.",
-      "completed" : true,
       "createdDate" : 1794855028.217895,
-      "updatedDate" : 1794855925.9878001
+      "updatedDate" : 1794855925.9878001,
+      "title" : "Write tests for context feature"
     },
     {
-      "completedDate" : 1794855966.5287859,
-      "description" : "Document new config file location (~\/.config\/difflux\/config.json), context option, --context CLI flag, and precedence rules. Update help text in src\/format.js if needed.",
-      "title" : "Update AGENTS.md documentation",
-      "completed" : true,
       "id" : 20,
-      "updatedDate" : 1794855966.5244079,
-      "createdDate" : 1794855031.881602,
       "tags" : [
         "#working",
         "#context"
-      ]
+      ],
+      "title" : "Update AGENTS.md documentation",
+      "description" : "Document new config file location (~\/.config\/difflux\/config.json), context option, --context CLI flag, and precedence rules. Update help text in src\/format.js if needed.",
+      "completedDate" : 1794855966.5287859,
+      "completed" : true,
+      "updatedDate" : 1794855966.5244079,
+      "createdDate" : 1794855031.881602
     },
     {
-      "createdDate" : 1794855344.1597309,
-      "completed" : false,
-      "description" : "when the tree command is run and untracked files are created or edited, they dont show in the diff list until added. we should see a seperate tree of added files in the same format.",
-      "id" : 21,
+      "completed" : true,
       "updatedDate" : 1794855344.162523,
       "tags" : [
         "#feature"
       ],
-      "title" : "untracked tree"
+      "id" : 21,
+      "title" : "untracked tree",
+      "description" : "when the tree command is run and untracked files are created or edited, they dont show in the diff list until added. we should see a seperate tree of added files in the same format.",
+      "createdDate" : 1794855344.1597309,
+      "completedDate" : 1794857439.7786479
     },
     {
       "updatedDate" : 1794856022.1314559,
-      "completedDate" : 1794856022.1382179,
-      "title" : "Create .\/build.sh script",
+      "description" : "Create a build.sh script that builds and installs the latest version of the difflux application. The script should handle npm dependencies and make the difflux command globally available.",
+      "id" : 22,
+      "createdDate" : 1794855903.1730242,
       "tags" : [
         "#working",
         "#context"
       ],
-      "description" : "Create a build.sh script that builds and installs the latest version of the difflux application. The script should handle npm dependencies and make the difflux command globally available.",
-      "createdDate" : 1794855903.1730242,
-      "completed" : true,
-      "id" : 22
+      "completedDate" : 1794856022.1382179,
+      "title" : "Create .\/build.sh script",
+      "completed" : true
     },
     {
-      "createdDate" : 1794856366.9976549,
-      "updatedDate" : 1794856473.015084,
-      "completedDate" : 1794856473.0209,
-      "completed" : true,
       "title" : "Add listUntrackedFiles() to src\/git.js",
+      "updatedDate" : 1794856473.015084,
+      "createdDate" : 1794856366.9976549,
+      "description" : "Implement listUntrackedFiles(cwd) that runs 'git ls-files -o --exclude-standard -z' and returns an array of untracked file paths. Handle the null-separated output correctly. Follow existing code style.",
       "tags" : [
         "#working",
         "#untrackedtree"
       ],
-      "description" : "Implement listUntrackedFiles(cwd) that runs 'git ls-files -o --exclude-standard -z' and returns an array of untracked file paths. Handle the null-separated output correctly. Follow existing code style.",
-      "id" : 23
+      "completedDate" : 1794856473.0209,
+      "id" : 23,
+      "completed" : true
     },
     {
       "completed" : true,
-      "tags" : [
-        "#working",
-        "#untrackedtree"
-      ],
+      "title" : "Modify formatTreeOutput to render untracked files",
+      "id" : 24,
       "updatedDate" : 1794856601.5798101,
       "description" : "Update formatTreeOutput(changedFiles, untrackedFiles) to render two sections: 'Modified:' with the existing tree, and 'Untracked:' with the untracked files tree. If no untracked files, omit the section. Untracked files should show just the path without line counts.",
-      "createdDate" : 1794856371.82022,
-      "id" : 24,
       "completedDate" : 1794856601.58529,
-      "title" : "Modify formatTreeOutput to render untracked files"
-    },
-    {
       "tags" : [
         "#working",
         "#untrackedtree"
       ],
-      "description" : "Modify src\/watch.js tree command to fetch untracked files via listUntrackedFiles and pass to formatTreeOutput. Modify index.js one-shot tree command to do the same. Use Promise.all for parallel fetching. Ensure backward compatibility.",
-      "updatedDate" : 1794856710.46453,
-      "completed" : true,
-      "id" : 25,
-      "createdDate" : 1794856376.0837312,
-      "title" : "Wire untracked files through watch mode and one-shot tree",
-      "completedDate" : 1794856710.4701838
+      "createdDate" : 1794856371.82022
     },
     {
-      "createdDate" : 1794856380.898926,
-      "updatedDate" : 1794856987.5434542,
-      "completedDate" : 1794856987.5488329,
+      "completedDate" : 1794856710.4701838,
+      "updatedDate" : 1794856710.46453,
+      "id" : 25,
+      "createdDate" : 1794856376.0837312,
+      "tags" : [
+        "#working",
+        "#untrackedtree"
+      ],
       "completed" : true,
+      "title" : "Wire untracked files through watch mode and one-shot tree",
+      "description" : "Modify src\/watch.js tree command to fetch untracked files via listUntrackedFiles and pass to formatTreeOutput. Modify index.js one-shot tree command to do the same. Use Promise.all for parallel fetching. Ensure backward compatibility."
+    },
+    {
       "tags" : [
         "#working",
         "#untrackedtree"
       ],
       "description" : "Add tests to test\/difflux.test.js covering: untracked files appear in tree view, modified and untracked shown separately, no untracked section when clean, listUntrackedFiles correctly parses output, untracked files respect .gitignore. Run full test suite.",
+      "createdDate" : 1794856380.898926,
+      "updatedDate" : 1794856987.5434542,
+      "completed" : true,
+      "completedDate" : 1794856987.5488329,
       "title" : "Write tests for untracked files in tree view",
       "id" : 26
     },
     {
-      "description" : "Document the untracked files feature in AGENTS.md. Add to 'Implemented capabilities' section that the tree command now shows both modified and untracked files separately.",
+      "updatedDate" : 1794857032.64656,
       "completedDate" : 1794857032.6526079,
+      "title" : "Update AGENTS.md for untracked tree feature",
+      "description" : "Document the untracked files feature in AGENTS.md. Add to 'Implemented capabilities' section that the tree command now shows both modified and untracked files separately.",
+      "id" : 27,
+      "completed" : true,
       "tags" : [
         "#working",
         "#untrackedtree"
       ],
-      "completed" : true,
-      "updatedDate" : 1794857032.64656,
-      "title" : "Update AGENTS.md for untracked tree feature",
-      "id" : 27,
       "createdDate" : 1794856384.8266931
     },
     {
+      "description" : "page up and page down buttons on the keyboard should scroll by page.",
+      "title" : "add page up\/down support",
+      "createdDate" : 1794856872.2563319,
+      "id" : 28,
       "tags" : [
         "#feature"
       ],
-      "completed" : false,
       "updatedDate" : 1794856872.258203,
-      "title" : "add page up\/down support",
-      "description" : "page up and page down buttons on the keyboard should scroll by page.",
-      "createdDate" : 1794856872.2563319,
-      "id" : 28
+      "completed" : false
+    },
+    {
+      "tags" : [
+        "#bug"
+      ],
+      "createdDate" : 1794857668.688653,
+      "updatedDate" : 1794857668.691138,
+      "description" : "I update the value of context and save it, and it works. but then it seems when i run the .\/deploy.sh script, the value is changed back to the default zero. it should stay the value i updated it to, and only overwrite the file if no file exists on launch",
+      "id" : 29,
+      "title" : "difflux config being overwritten",
+      "completed" : false
+    },
+    {
+      "id" : 30,
+      "updatedDate" : 1794857796.273665,
+      "createdDate" : 1794857708.88322,
+      "completed" : true,
+      "tags" : [
+        "#working",
+        "#pagekeys"
+      ],
+      "description" : "Modify src\/watch.js to detect ANSI escape sequences for Page Up (\\x1b[5~) and Page Down (\\x1b[6~). On Page Up, scroll up by visible page size (terminal rows minus status bar rows). On Page Down, scroll down by visible page size. Clamp scroll offset to valid range. Handle edge cases: already at top\/bottom.",
+      "title" : "Add Page Up\/Down scrolling to watch mode",
+      "completedDate" : 1794857796.278425
+    },
+    {
+      "tags" : [
+        "#working",
+        "#pagekeys"
+      ],
+      "id" : 31,
+      "description" : "Update the keyboard shortcuts section in src\/format.js (help text) and AGENTS.md to document Page Up\/Down scrolling support. List all keyboard shortcuts: q, r, k, j, g, G, Page Up, Page Down.",
+      "completedDate" : 1794857892.0602601,
+      "title" : "Update keyboard shortcuts documentation",
+      "updatedDate" : 1794857892.0558228,
+      "completed" : true,
+      "createdDate" : 1794857714.8861179
     }
-  ]
+  ],
+  "config" : {
+    "agentTags" : [
+      "#working"
+    ],
+    "command" : [
+      "bug",
+      "feature"
+    ],
+    "lists" : [
+      "backlogTags",
+      "pinTags",
+      "command"
+    ],
+    "showCompleted" : "false",
+    "sort" : "completed",
+    "tagDisplayLimit" : 0
+  }
 }

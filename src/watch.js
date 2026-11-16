@@ -196,6 +196,26 @@ export async function runWatch(currentDir, relativeTarget, command, intervalMs, 
   process.stdin.on("data", (data) => {
     const key = data.toString();
 
+    // Page Up: scroll up one full page
+    if (key === "\x1b[5~") {
+      const dims = getTerminalDimensions();
+      const pageRows = dims.rows - STATUS_BAR_ROWS;
+      scrollState.scrollOffset = Math.max(0, scrollState.scrollOffset - pageRows);
+      if (prevContent) {
+        renderWatchFrame(prevContent, scrollState, commitMessage);
+      }
+    }
+
+    // Page Down: scroll down one full page
+    if (key === "\x1b[6~") {
+      const dims = getTerminalDimensions();
+      const pageRows = dims.rows - STATUS_BAR_ROWS;
+      scrollState.scrollOffset = Math.min(scrollState.maxScrollOffset, scrollState.scrollOffset + pageRows);
+      if (prevContent) {
+        renderWatchFrame(prevContent, scrollState, commitMessage);
+      }
+    }
+
     // q to quit
     if (key === "q" || key === "Q") {
       restoreTerminal();

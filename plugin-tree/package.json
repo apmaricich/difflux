@@ -1,0 +1,25 @@
+{
+  "name": "opencode-difflux-tree",
+  "version": "0.1.0",
+  "description": "OpenCode plugin showing difflux tree in sidebar",
+  "type": "module",
+  "scripts": {
+    "build": "esbuild src/tui.tsx --bundle --format=esm --platform=node --outfile=dist/tui.js",
+    "typecheck": "tsc --noEmit"
+  },
+  "exports": {
+    "./tui": "./dist/tui.js"
+  },
+  "dependencies": {
+    "@opencode/plugin": "latest"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2",
+    "tsx": "^4.23.15"
+  },
+  "peerDependencies": {
+    "@opentui/core": ">=0.6.6",
+    "@opentui/solid": ">=0.6.6",
+    "solid-js": ">=1.9.0"
+  }
+}

@@ -5,82 +5,165 @@
       "feature"
     ],
     "tagDisplayLimit" : 0,
-    "sort" : "completed",
     "lists" : [
       "backlogTags",
       "pinTags",
       "command"
     ],
-    "showCompleted" : "false"
+    "showCompleted" : "false",
+    "sort" : "completed"
   },
   "tasks" : [
     {
-      "completed" : true,
       "description" : "files in .gitattributes are showing a diff of NNaN when marked for exclusion in a diff. i want any files excluded from the diff to not be shown in either the difflux or difflux ls commands.",
-      "updatedDate" : 1793391159.9788229,
+      "completed" : true,
       "completedDate" : 1793393680.342051,
-      "id" : 2,
+      "updatedDate" : 1793391159.9788229,
+      "title" : "NaN showing for files excluded from diff",
       "tags" : [
         "#bug"
       ],
-      "title" : "NaN showing for files excluded from diff",
+      "id" : 2,
       "createdDate" : 1793391159.9760451
     },
     {
-      "createdDate" : 1793635611.2516079,
-      "title" : "update ls to tree",
-      "description" : "i dont like the name of the ls command. please change the difflux ls command to difflux tree. it is more descriptive that way.",
-      "id" : 3,
-      "completedDate" : 1793713203.0147109,
-      "updatedDate" : 1793635611.2534299,
       "completed" : true,
+      "createdDate" : 1793635611.2516079,
+      "description" : "i dont like the name of the ls command. please change the difflux ls command to difflux tree. it is more descriptive that way.",
       "tags" : [
         "#feature"
-      ]
+      ],
+      "title" : "update ls to tree",
+      "completedDate" : 1793713203.0147109,
+      "id" : 3,
+      "updatedDate" : 1793635611.2534299
     },
     {
-      "updatedDate" : 1793646297.0084281,
-      "completedDate" : 1793646691.9312401,
-      "title" : "difflux ls --watch: too many open files (EMFILE)",
+      "completed" : true,
       "createdDate" : 1793635764.0604291,
-      "description" : "Root cause: Chokidar v5's ignored option with glob patterns doesn't work because anymatch's ** doesn't traverse dot-prefixed path segments.\n\nSolution: Replace glob-based ignored patterns with a function-based approach. The function checks each path against both custom patterns (from .diffluxignore) and default patterns (node_modules, .git, dist, build, tmp, coverage, .cache, .next, .nuxt, .vite, __pycache__, .pyc, .log, .DS_Store).\n\nTested on ~\/Code\/task with 49,000+ files (including plugin\/node_modules with 42,000+ files) - works correctly.",
       "tags" : [
         "#bug"
       ],
-      "completed" : true,
-      "id" : 4
+      "description" : "Root cause: Chokidar v5's ignored option with glob patterns doesn't work because anymatch's ** doesn't traverse dot-prefixed path segments.\n\nSolution: Replace glob-based ignored patterns with a function-based approach. The function checks each path against both custom patterns (from .diffluxignore) and default patterns (node_modules, .git, dist, build, tmp, coverage, .cache, .next, .nuxt, .vite, __pycache__, .pyc, .log, .DS_Store).\n\nTested on ~\/Code\/task with 49,000+ files (including plugin\/node_modules with 42,000+ files) - works correctly.",
+      "id" : 4,
+      "updatedDate" : 1793646297.0084281,
+      "title" : "difflux ls --watch: too many open files (EMFILE)",
+      "completedDate" : 1793646691.9312401
     },
     {
+      "title" : "add g and G support",
       "createdDate" : 1793654636.6111259,
       "id" : 5,
-      "description" : "when in --watch mode, g should be used to jump to the top and G should be used to jump to the last line.",
+      "completed" : true,
       "completedDate" : 1793712909.3365979,
-      "updatedDate" : 1793654636.6137409,
-      "title" : "add g and G support",
       "tags" : [
         "#feature"
       ],
-      "completed" : true
+      "description" : "when in --watch mode, g should be used to jump to the top and G should be used to jump to the last line.",
+      "updatedDate" : 1793654636.6137409
     },
     {
       "createdDate" : 1793712600.949528,
-      "completed" : true,
-      "description" : "if a user enters an invalid command, it should let the user know it is not a valid command.",
-      "id" : 6,
-      "completedDate" : 1793712722.1826401,
+      "updatedDate" : 1793712600.9527421,
       "tags" : [
         "#feature"
       ],
       "title" : "invalid command message",
-      "updatedDate" : 1793712600.9527421
+      "description" : "if a user enters an invalid command, it should let the user know it is not a valid command.",
+      "id" : 6,
+      "completed" : true,
+      "completedDate" : 1793712722.1826401
+    },
+    {
+      "completedDate" : 1793839670.3012428,
+      "completed" : true,
+      "createdDate" : 1793837748.266324,
+      "title" : "license file",
+      "id" : 7,
+      "description" : "add an mit license file and update the readme to include the license details. "
+    },
+    {
+      "tags" : [
+        "#feature"
+      ],
+      "title" : "opencode plugin",
+      "completed" : false,
+      "description" : "create an opencode plugin in the \/plugin-tree directory that can be used by opencode to display the output of the `difflux tree` command. This should refresh on an 30 second interval so we can see what files are being updated in the sidebar. title of item should be `difflux ",
+      "updatedDate" : 1794845246.577261,
+      "createdDate" : 1794845246.574322,
+      "id" : 8
+    },
+    {
+      "updatedDate" : 1794846253.8647819,
+      "createdDate" : 1794846227.3430572,
+      "tags" : [
+        "#working"
+      ],
+      "title" : "Create plugin package.json",
+      "id" : 9,
+      "completed" : true,
+      "completedDate" : 1794846329.095567,
+      "description" : "Create plugin-tree\/package.json with name 'opencode-difflux-tree', type module, exports for . and .\/tui, dependencies on @opencode\/plugin latest, and peerDependencies for @opentui\/core >=0.6.6, @opentui\/solid >=0.6.6, solid-js >=1.9.0"
+    },
+    {
+      "id" : 10,
+      "tags" : [
+        "#working"
+      ],
+      "title" : "Create server plugin definition",
+      "createdDate" : 1794846227.3490219,
+      "completedDate" : 1794846385.132405,
+      "description" : "Create plugin-tree\/index.ts that exports a Plugin defined with id 'difflux' and a setup function that logs '[difflux] Server plugin loaded' to stderr",
+      "updatedDate" : 1794846332.536464,
+      "completed" : true
+    },
+    {
+      "createdDate" : 1794846227.3544068,
+      "tags" : [
+        "#working"
+      ],
+      "completed" : true,
+      "description" : "Copy src\/ansi.ts from \/Users\/apmaricich\/Code\/task\/task-stats\/src\/ansi.ts to plugin-tree\/src\/ansi.ts",
+      "title" : "Copy ANSI parser from task-stats",
+      "id" : 11,
+      "completedDate" : 1794846510.6032948,
+      "updatedDate" : 1794846389.7753549
     },
     {
       "completed" : true,
-      "createdDate" : 1793837748.266324,
-      "description" : "add an mit license file and update the readme to include the license details. ",
-      "completedDate" : 1793839670.3012428,
-      "title" : "license file",
-      "id" : 7
+      "createdDate" : 1794846227.358938,
+      "tags" : [
+        "#working"
+      ],
+      "title" : "Implement TUI sidebar panel",
+      "description" : "Create plugin-tree\/src\/tui.tsx that defines a Plugin with id 'difflux.tui'. On setup: use createSignal for stats, implement refresh() that runs 'node \/Users\/apmaricich\/Code\/difflux\/index.js tree' via child_process.exec with cwd set to ctx.location?.directory ?? process.cwd(), parse ANSI output with parseAnsi(), set signal, call refresh() once immediately, then setInterval(refresh, 30000). Return ctx.ui.slot with append: 'sidebar.content' that renders the parsed segments as styled text spans. Include colorToCode() and toOpenTuiStyle() helpers.",
+      "id" : 12,
+      "updatedDate" : 1794846513.564939,
+      "completedDate" : 1794846599.1933441
+    },
+    {
+      "completedDate" : 1794846868.78736,
+      "id" : 13,
+      "updatedDate" : 1794846603.2429891,
+      "createdDate" : 1794846227.364579,
+      "description" : "Create symlink: ln -s \/Users\/apmaricich\/Code\/difflux\/plugin-tree ~\/.config\/opencode\/plugins\/plugin-tree",
+      "completed" : true,
+      "title" : "Symlink plugin to OpenCode config",
+      "tags" : [
+        "#working"
+      ]
+    },
+    {
+      "title" : "Update OpenCode global config",
+      "description" : "Edit ~\/.config\/opencode\/cli.json to add 'plugin-tree' to the plugins array",
+      "completed" : true,
+      "updatedDate" : 1794846879.025444,
+      "createdDate" : 1794846227.3704591,
+      "id" : 14,
+      "completedDate" : 1794846928.711448,
+      "tags" : [
+        "#working"
+      ]
     }
   ]
 }

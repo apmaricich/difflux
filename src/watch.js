@@ -6,7 +6,7 @@
 import fs from "fs";
 import path from "path";
 import chokidar from "chokidar";
-import { runGit, buildDiffArgs, buildNumstatArgs, parseNumstatOutput, getLatestCommitMessage } from "./git.js";
+import { runGit, buildDiffArgs, buildNumstatArgs, parseNumstatOutput, getLatestCommitMessage, listUntrackedFiles } from "./git.js";
 import { formatDiffOutput, formatTreeOutput } from "./format.js";
 import { renderWatchFrame, setupRawInput, getTerminalDimensions } from "./terminal.js";
 import { STATUS_BAR_ROWS } from "./constants.js";
@@ -146,9 +146,12 @@ export async function runWatch(currentDir, relativeTarget, command, intervalMs, 
         commitMessage = await getLatestCommitMessage(currentDir);
 
         if (command === "tree") {
-          const output = await runGit(buildNumstatArgs(relativeTarget), currentDir);
+          const [output, untracked] = await Promise.all([
+            runGit(buildNumstatArgs(relativeTarget), currentDir),
+            listUntrackedFiles(currentDir),
+          ]);
           const changedFiles = parseNumstatOutput(output);
-          content = formatTreeOutput(changedFiles);
+          content = formatTreeOutput(changedFiles, untracked);
         } else {
           const output = await runGit(buildDiffArgs(relativeTarget, contextLines), currentDir);
           content = formatDiffOutput(output);

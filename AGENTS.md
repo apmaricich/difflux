@@ -10,6 +10,7 @@
 
 - One-shot diff view: `difflux [path]` — shows colored diff between HEAD and working tree.
 - Changed-files tree view: `difflux ls [path]` — shows directory tree of changed files with addition/deletion counts.
+- Untracked files appear in tree view with "(New)" label; when both modified and untracked files exist, they are shown in separate "Modified:" and "Untracked:" sections (uses `git ls-files -o --exclude-standard -z`).
 - Live watch mode: `difflux --watch [path]` and `difflux ls --watch [path]` — uses `chokidar` filesystem notifications plus periodic `git diff` polling (default 1000ms, configurable via `--interval=1..60000`) to refresh automatically.
 - Custom terminal renderer with scroll anchoring: `↑`/`↓` to scroll, `r` to refresh while retaining position, `q` or `Ctrl+C` to quit. Shows "New changes available — press r to refresh" when scrolled up.
 - Git exit code 1 from `git diff` is treated as success (no changes); actual failures are rejected.

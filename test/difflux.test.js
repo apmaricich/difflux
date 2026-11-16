@@ -402,4 +402,249 @@ describe("difflux", () => {
       rmSync(repo, { recursive: true });
     }
   });
+
+  // ============================================================
+  // UNTRACKED FILES IN TREE VIEW TESTS
+  // ============================================================
+
+  test("untracked files appear in tree view with (New) label", async () => {
+    const repo = await setupRepo();
+    try {
+      // Create an untracked file (not added to git)
+      writeFileSync(resolve(repo, "new-file.txt"), "untracked content\n");
+      
+      const result = runCli(["tree"], repo);
+      
+      assert(
+        result.stdout.includes("new-file.txt (New)"),
+        "Untracked file should appear with (New) label"
+      );
+    } finally {
+      rmSync(repo, { recursive: true });
+    }
+  });
+
+  test("modified and untracked files shown in separate sections", async () => {
+    const repo = await setupRepo();
+    try {
+      // Modify existing file
+      writeFileSync(resolve(repo, "README.md"), "# Test\nChanged\n");
+      
+      // Create untracked file
+      writeFileSync(resolve(repo, "new-file.txt"), "untracked\n");
+      
+      const result = runCli(["tree"], repo);
+      
+      // Should have Modified: section header
+      assert(
+        result.stdout.includes("Modified:"),
+        "Should show Modified: section header"
+      );
+      
+      // Should have Untracked: section header
+      assert(
+        result.stdout.includes("Untracked:"),
+        "Should show Untracked: section header"
+      );
+      
+      // Modified file in first section
+      const modifiedSection = result.stdout.split("Untracked:")[0];
+      assert(
+        modifiedSection.includes("README.md"),
+        "Modified file should be in Modified: section"
+      );
+      
+      // Untracked file in second section
+      const untrackedSection = result.stdout.split("Untracked:")[1];
+      assert(
+        untrackedSection.includes("new-file.txt (New)"),
+        "Untracked file should be in Untracked: section with (New) label"
+      );
+    } finally {
+      rmSync(repo, { recursive: true });
+    }
+  });
+
+  test("no untracked section when no untracked files", async () => {
+    const repo = await setupRepo();
+    try {
+      // Only modify, no untracked files
+      writeFileSync(resolve(repo, "README.md"), "# Test\nChanged\n");
+      
+      const result = runCli(["tree"], repo);
+      
+      assert(
+        !result.stdout.includes("Untracked:"),
+        "Should not show Untracked: section when no untracked files"
+      );
+      assert(
+        result.stdout.includes("README.md"),
+        "Should still show modified file"
+      );
+    } finally {
+      rmSync(repo, { recursive: true });
+    }
+  });
+
+  test("only untracked section when no modified files", async () => {
+    const repo = await setupRepo();
+    try {
+      // Only untracked, no modifications
+      writeFileSync(resolve(repo, "new-file.txt"), "untracked\n");
+      
+      const result = runCli(["tree"], repo);
+      
+      // Should show Untracked: header
+      assert(
+        result.stdout.includes("Untracked:"),
+        "Should show Untracked: section header"
+      );
+      
+      // Should NOT show Modified: header
+      assert(
+        !result.stdout.includes("Modified:"),
+        "Should not show Modified: section when no modified files"
+      );
+      
+      assert(
+        result.stdout.includes("new-file.txt (New)"),
+        "Should show the untracked file with (New) label"
+      );
+    } finally {
+      rmSync(repo, { recursive: true });
+    }
+  });
+
+  test("untracked files in nested directories render correctly", async () => {
+    const repo = await setupRepo();
+    try {
+      // Need to create parent dirs
+      const { mkdirSync } = await import("node:fs");
+      mkdirSync(resolve(repo, "src/new-module"), { recursive: true });
+      
+      // Create nested untracked directory structure
+      writeFileSync(resolve(repo, "src/new-module/helper.js"), "helper\n");
+      
+      const result = runCli(["tree"], repo);
+      
+      // Should show directory structure
+      assert(
+        result.stdout.includes("src/"),
+        "Should show parent directory"
+      );
+      assert(
+        result.stdout.includes("new-module/"),
+        "Should show nested directory"
+      );
+      assert(
+        result.stdout.includes("helper.js (New)"),
+        "Should show nested untracked file with (New) label"
+      );
+    } finally {
+      rmSync(repo, { recursive: true });
+    }
+  });
+
+  test("untracked files are excluded when .gitignore matches", async () => {
+    const repo = await setupRepo();
+    try {
+      // Create .gitignore
+      writeFileSync(resolve(repo, ".gitignore"), "ignored-folder/\n*.tmp\n");
+      
+      // Create untracked files that should be ignored
+      const { mkdirSync } = await import("node:fs");
+      mkdirSync(resolve(repo, "ignored-folder"), { recursive: true });
+      writeFileSync(resolve(repo, "ignored-folder/file.txt"), "should be ignored\n");
+      writeFileSync(resolve(repo, "temp.tmp"), "should be ignored\n");
+      
+      // Create untracked file that should NOT be ignored
+      writeFileSync(resolve(repo, "important.txt"), "should be shown\n");
+      
+      const result = runCli(["tree"], repo);
+      
+      assert(
+        result.stdout.includes("important.txt (New)"),
+        "Should show untracked file not in .gitignore"
+      );
+      assert(
+        !result.stdout.includes("ignored-folder"),
+        "Should not show files in ignored folder"
+      );
+      assert(
+        !result.stdout.includes("temp.tmp"),
+        "Should not show files matching *.tmp ignore pattern"
+      );
+    } finally {
+      rmSync(repo, { recursive: true });
+    }
+  });
+
+  test("one-shot tree command includes untracked files", async () => {
+    const repo = await setupRepo();
+    try {
+      // Create both modified and untracked files
+      writeFileSync(resolve(repo, "README.md"), "# Changed\n");
+      writeFileSync(resolve(repo, "untracked.txt"), "untracked\n");
+      
+      // One-shot command (no --watch)
+      const result = runCli(["tree"], repo);
+      
+      assert(
+        result.stdout.includes("README.md"),
+        "One-shot tree should include modified files"
+      );
+      assert(
+        result.stdout.includes("untracked.txt (New)"),
+        "One-shot tree should include untracked files with (New) label"
+      );
+    } finally {
+      rmSync(repo, { recursive: true });
+    }
+  });
+
+  test("tree with untracked file in specific path", async () => {
+    const repo = await setupRepo();
+    try {
+      const { mkdirSync } = await import("node:fs");
+      mkdirSync(resolve(repo, "feature"), { recursive: true });
+      
+      // Untracked file in specific path
+      writeFileSync(resolve(repo, "feature/new.js"), "new code\n");
+      
+      const result = runCli(["tree", "feature"], repo);
+      
+      assert(
+        result.stdout.includes("new.js (New)"),
+        "Should show untracked file when filtering by path"
+      );
+    } finally {
+      rmSync(repo, { recursive: true });
+    }
+  });
+
+  test("multiple untracked files at same level", async () => {
+    const repo = await setupRepo();
+    try {
+      writeFileSync(resolve(repo, "file1.txt"), "one\n");
+      writeFileSync(resolve(repo, "file2.txt"), "two\n");
+      writeFileSync(resolve(repo, "file3.txt"), "three\n");
+      
+      const result = runCli(["tree"], repo);
+      
+      assert(
+        result.stdout.includes("file1.txt (New)"),
+        "Should show file1"
+      );
+      assert(
+        result.stdout.includes("file2.txt (New)"),
+        "Should show file2"
+      );
+      assert(
+        result.stdout.includes("file3.txt (New)"),
+        "Should show file3"
+      );
+    } finally {
+      rmSync(repo, { recursive: true });
+    }
+  });
 });

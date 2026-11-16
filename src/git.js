@@ -108,3 +108,21 @@ export async function getLatestCommitMessage(cwd) {
     return "";
   }
 }
+
+/**
+ * List untracked files in the working tree.
+ * @param {string} cwd - Working directory.
+ * @returns {Promise<string[]>} Array of untracked file paths, or empty array if none.
+ */
+export async function listUntrackedFiles(cwd) {
+  const args = ["ls-files", "-o", "--exclude-standard", "-z"];
+  try {
+    const output = await runGit(args, cwd);
+    return output
+      .split("\0")
+      .filter(Boolean)
+      .map((path) => ({ path }));
+  } catch {
+    return [];
+  }
+}

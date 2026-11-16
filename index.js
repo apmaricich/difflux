@@ -7,7 +7,7 @@
  */
 
 import { parseArgs } from "./src/cli.js";
-import { runGit, buildDiffArgs, buildNumstatArgs, parseNumstatOutput } from "./src/git.js";
+import { runGit, buildDiffArgs, buildNumstatArgs, parseNumstatOutput, listUntrackedFiles } from "./src/git.js";
 import { formatDiffOutput, formatTreeOutput, formatHelp } from "./src/format.js";
 import { runWatch } from "./src/watch.js";
 
@@ -34,9 +34,12 @@ async function main() {
     }
 
     if (command === "tree") {
-      const output = await runGit(buildNumstatArgs(relativeTarget), currentDir);
+      const [output, untracked] = await Promise.all([
+        runGit(buildNumstatArgs(relativeTarget), currentDir),
+        listUntrackedFiles(currentDir),
+      ]);
       const changedFiles = parseNumstatOutput(output);
-      process.stdout.write(`${formatTreeOutput(changedFiles)}\n`);
+      process.stdout.write(`${formatTreeOutput(changedFiles, untracked)}\n`);
       return;
     }
 

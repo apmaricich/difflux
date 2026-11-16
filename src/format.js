@@ -225,15 +225,68 @@ function renderDirectory(directory, prefix) {
 /**
  * Format changed files as a directory tree with addition/deletion counts.
  * @param {Array<{path: string, additions: number, deletions: number}>} changedFiles
+ * @param {Array<{path: string}>} [untrackedFiles] - Optional list of untracked files.
  * @returns {string} Formatted tree output.
  */
-export function formatTreeOutput(changedFiles) {
+export function formatTreeOutput(changedFiles, untrackedFiles) {
   if (!changedFiles.length) {
+    if (untrackedFiles && untrackedFiles.length) {
+      const untrackedRoot = buildTree(
+        untrackedFiles.map((f) => ({ ...f, additions: 0, deletions: 0 })),
+      );
+      return [
+        "Untracked:",
+        ".",
+        ...renderUntracked(untrackedRoot, ""),
+      ].join("\n");
+    }
     return ".";
   }
 
-  const root = buildTree(changedFiles);
-  return [".", ...renderDirectory(root, "")].join("\n");
+  const changedRoot = buildTree(changedFiles);
+  let output = [".", ...renderDirectory(changedRoot, "")].join("\n");
+
+  if (untrackedFiles && untrackedFiles.length) {
+    const untrackedRoot = buildTree(
+      untrackedFiles.map((f) => ({ ...f, additions: 0, deletions: 0 })),
+    );
+    output = [
+      "Modified:",
+      output,
+      "",
+      "Untracked:",
+      ".",
+      ...renderUntracked(untrackedRoot, ""),
+    ].join("\n");
+  }
+
+  return output;
+}
+
+/**
+ * Render untracked files in tree format with (New) labels.
+ * @param {Map} directory - Nested directory structure.
+ * @param {string} prefix - Current indentation prefix.
+ * @returns {string[]} Formatted lines.
+ */
+function renderUntracked(directory, prefix) {
+  return [...directory.entries()]
+    .sort(([left], [right]) => left.localeCompare(right))
+    .map(([name, children], index, entries) => {
+      const last = index === entries.length - 1;
+      const connector = last ? "└── " : "├── ";
+      const childPrefix = prefix + (last ? "    " : "│   ");
+
+      if (!(children instanceof Map)) {
+        return `${prefix}${connector}${name} (New)`;
+      }
+
+      return [
+        `${prefix}${connector}${name}/`,
+        ...renderUntracked(children, childPrefix),
+      ];
+    })
+    .flat();
 }
 
 /**
